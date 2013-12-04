@@ -292,14 +292,14 @@
     
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.2/angular.min.js"></script>
-    <script src="canvasjs.js"></script>
+    <!--<script src="canvasjs.js"></script>-->
 
-    <script>
+    <script type="text/javascript">
 
         var monthNames = ['Januari', 'Februari', 'Mars', 'April', 'Maj', 'Juni', 'Juli', 'Augusti', 'September', 'Oktober', 'November', 'December'];
 
         var yomoApp = angular.module("yomoApp", []);
-
+        /*
         yomoApp.directive('splinechart', function () {
             return {
                 restrict: 'E',
@@ -340,7 +340,7 @@
                     });
                 }
             };
-        });
+        });*/
 
         yomoApp.controller("LoanController", function ($scope) {
             
