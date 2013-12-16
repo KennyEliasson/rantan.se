@@ -8,6 +8,10 @@
       <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,400italic' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Oswald:400,700' rel='stylesheet' type='text/css'>
     <link href="content/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    
+
+
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -68,6 +72,19 @@
         .locked {
             z-index:1000;position:absolute;left:0;right:0;margin:auto;text-align:center;top:0;bottom:0;height:25px;
         }
+
+        .fa {
+            font-size:25px;
+            color:white;
+        }
+
+        td {
+            border:0 !important;
+        }
+
+.table > tbody + tbody {
+  border:0;
+}
     </style>
 </head>
 <body>
@@ -96,7 +113,7 @@
                             Räkna snabbt ut dina räntekostnander. Jämför hur olika räntor och amorteringsbelopp påverkar din ekonomi.
                             </p>
                         <p>
-                            Vi hjälper dig kunna ta rätt beslut om dina lån.
+                            Vi hjälper dig ta rätt beslut om dina lån.
                         </p>
 
                     </div>
@@ -114,11 +131,20 @@
 
             <div class="col-md-12">
                 <div class="locked" ng-hide="loan.active">
-                    <button type="button" class="btn btn-lg btn-primary" ng-click="activate(loan)">Lägg till nytt lån</button>
+                    <button type="button" class="btn btn-lg btn-primary" ng-click="activate(loan)">Lägg till ny beräkning</button>
                 </div>
                 <div class="panel panel-default" ng-class="{'panel-locked': !loan.active}" >
-                    <div class="panel-heading" contenteditable>
-                        {{loan.name}}
+                    <div class="panel-heading">
+                        <span  contenteditable>{{loan.name}}</span>
+                        <div class="pull-right">
+                            <a href="">
+                            <i  class="fa fa-money"></i>
+                                </a>
+                            <a>
+                            <i class="fa fa-usd"></i>
+                                </a>
+                        </div>
+                        
                     </div>
                     <div class="panel-body">
                         <div class="row">
@@ -126,13 +152,13 @@
 
                                 <form class="form-horizontal">
                                     <div class="form-group">
-                                        <label class="col-lg-3 control-label">Lånebelopp</label>
+                                        <label class="col-lg-4 control-label">Lånebelopp</label>
                                         <div class="col-lg-4">
                                             <input type="text" ng-model="loan.sum" class="form-control">
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="col-lg-3 control-label">Räntesats</label>
+                                        <label class="col-lg-4 control-label">Räntesats</label>
                                         <div class="col-lg-3">
                                             <div class="input-group">
                                                 <input type="text" ng-model="loan.interest" class="form-control">
@@ -141,37 +167,81 @@
 
                                         </div>
                                     </div>
+
+
+                                    <!--
                                     <div class="form-group">
-                                        <label class="col-lg-3 control-label">Amortering</label>
+                                        <label class="col-lg-4 control-label">Amortering</label>
                                         <div class="col-lg-3">
                                             <input type="text" ng-model="loan.installment" class="form-control">
                                         </div>
                                         <span>i månaden</span>
                                     </div>
+                                    -->
+                                     <div class="form-group" ng-repeat="installment in loan.installments">
+                                        <label class="col-lg-4 control-label">Amortering #{{$index+1}}</label>
+                                        <div class="col-lg-3">
+                                            <input type="text" ng-model="installment.sum" class="form-control">
+                                        </div>
+                                        <span>i månaden</span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-lg-4 control-label"></label>
+                                        <div class="col-lg-3">
+                                            <button ng-click="addInstallment()" type="button" class="btn btn-primary btn-sm pull-right"><i class="glyphicon glyphicon-plus"></i> Jämför med...</button>
+                                        </div>
+                                    </div>
+                                    
+                                        
                                 </form>
                             </div>
 
                             <div class="col-md-6">
 
                                 <table class="table">
-                                    <!--
-                                    <tr>
-                                        <td>Amortering</td>
-                                        <td>{{loan.installment}}</td>
-                                    </tr>
-                                        -->
-                                    <tr>
-                                        <td>Avbetalt</td>
-                                        <td>{{lastPaymentDate}}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Total räntekostnad</td>
-                                        <td>{{totalInterestCharge}}:-</td>
-                                    </tr>
+                                    <tbody ng-repeat="calculation in calculations">
+                                        <tr class="first-row">
+                                            <td colspan="2" class="active"><small>Amortering {{calculation.installment}}:-</small></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Avbetalt</td>
+                                            <td>{{calculation.lastPaymentDate}}</td>
+                                        </tr>
+                                        <tr class="last-row">
+                                            <td>Total räntekostnad</td>
+                                            <td>{{calculation.totalInterestCharge}}:-</td>
+                                        </tr>
+                                    </tbody>
                                 </table>
 
+                                <button type="button" class="btn btn-primary pull-right" ng-click="showPayments=!showPayments">Tabell</button>
+
+                                 <table class="table" ng-if="showPayments">
+                                    <!--<thead>
+                                        <tr>
+                                            <th>Datum</th>
+                                            <th ng-repeat="">Ränta</th>
+                                            <th>Totalt</th>
+                                        </tr>
+                                    </thead>-->
+                                     <tbody>
+                                         <tr ng-repeat="payment in payments|limitTo:paymentLimit">
+                                            <td><span ng-show="!payment.isSummary">{{payment.date|date:'yyyy-MM'}}</span><span ng-show="payment.isSummary">{{payment.date|date:'yyyy'}}</span></td>
+                                            <td ng-repeat="value in payment.monthly">{{value}}</td>
+                                        </tr>
+                                     </tbody>
+                                     <tfoot>
+                                         <tr>
+                                             <td colspan="3">
+                                                 <button type="button" class="btn btn-primary" ng-click="paymentLimit=paymentLimit+12">Mer..</button>
+                                             </td>
+                                         </tr>
+                                     </tfoot>
+                                </table>
                             </div>
                         </div>
+                        
 
                     </div>
 
@@ -280,7 +350,10 @@
         </div>
     </footer>
 
-    <script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.2/angular.min.js"></script>
+    
+    <script type="text/javascript">
+
         (function (i, s, o, g, r, a, m) {
             i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
                 (i[r].q = i[r].q || []).push(arguments)
@@ -291,112 +364,136 @@
         ga('create', 'UA-46212289-1', 'azurewebsites.net');
         ga('send', 'pageview');
 
-</script>
-
-    <script>
-      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-    
-      ga('create', 'UA-46212289-1', 'azurewebsites.net');
-      ga('send', 'pageview');
-    
-    </script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.2/angular.min.js"></script>
-    <!--<script src="canvasjs.js"></script>-->
-
-    <script type="text/javascript">
-
         var monthNames = ['Januari', 'Februari', 'Mars', 'April', 'Maj', 'Juni', 'Juli', 'Augusti', 'September', 'Oktober', 'November', 'December'];
 
         var yomoApp = angular.module("yomoApp", []);
-        /*
-        yomoApp.directive('splinechart', function () {
-            return {
-                restrict: 'E',
-                template: '<div></div>',
-                transclude: true,
-                replace: true,
-
-                link: function (scope, element, attrs) {
-
-                    var chartsDefaults = {
-                        title: { text: 'Testar' },
-                        xValueType: "dateTime",
-                        data: [{
-                            type: "line",
-                            dataPoints: []
-                        }]
-
-                    };
-
-                    //Update when charts data changes
-                    scope.$watch(function () { return attrs.value; }, function (value) {
-                        if (!attrs.value) return;
-
-                        var newSettings = {};
-
-                        angular.extend(newSettings, chartsDefaults);
-
-                        var data = JSON.parse(attrs.value);
-
-                        for (var i = 0; i < data.length; i++) {
-                            data[i].x = new Date(data[i].x);
-                        }
-
-                        newSettings.data[0].dataPoints = data;
-
-                        var chart = new CanvasJS.Chart(attrs.id, newSettings);
-                        chart.render();
-                    });
-                }
-            };
-        });*/
 
         yomoApp.controller("LoanController", function ($scope) {
             
             var loan = $scope.loan;
-            $scope.$watch("loan.interest + loan.sum + loan.installment", function () {
+
+            $scope.addInstallment = function () {
+                loan.installments.push({ sum: 1000 });
+            }
+
+            $scope.$watch("loan.interest + loan.sum", function () {
                 calculate();
             });
 
+            $scope.$watch("loan.installments", function () {
+                calculate();
+            }, true);
+            
             var calculateMontlyCost = function (sum, interest) {
                 return ((sum * interest) / 12);
             }
 
+            var calculateSingleInstallment = function (sum, interest, installment) {
+
+                if (installment < 100)
+                    return [];
+
+                var payments = [];
+                var currentDate = new Date();
+                currentDate.setDate(1);
+
+                while (sum > 0) {
+                    var montlyInterestCharge = calculateMontlyCost(sum, interest);
+                    sum = sum - installment;
+                    payments.push({ monthlyCost: montlyInterestCharge, sum: sum, date: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1) });
+                    currentDate.setMonth(currentDate.getMonth() + 1);
+                }
+                
+                return payments;
+            };
+
             var calculate = function () {
+
+                if (!loan.active)
+                    return;
 
                 var interest = loan.interest / 100;
                 var totalInterestCharge = 0;
-                
-                var installment = parseInt(loan.installment);
                 var sum = loan.sum;
 
-                if (installment > 99) {
+                var installmentOptions = [];
+                var lowestInstallment = 0;
+                var lowestInstallmentIndex = 0;
+                for (var i = 0; i < loan.installments.length; i++) {
 
-                    var payments = [];
-                    var currentDate = new Date();
-                    currentDate.setDate(1);
-                    
-
-                    while (sum > 0) {
-                        var montlyInterestCharge = calculateMontlyCost(sum, interest);
-                        sum = sum - installment;
-                        payments.push({ montlyCost: montlyInterestCharge, sum: sum, date: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1) });
-
-                        currentDate.setMonth(currentDate.getMonth() + 1);
+                    if (lowestInstallment < loan.installments[i].sum) {
+                        lowestInstallment = loan.installments[i];
+                        lowestInstallmentIndex = i;
                     }
-
-                    payments.forEach(function (n) { totalInterestCharge += n.montlyCost });
                     
-                    $scope.months = payments.length;
-                    $scope.years = Math.ceil(payments.length / 12);
-                    $scope.totalInterestCharge = totalInterestCharge.toFixed();
-                    var lastDate =  payments[payments.length - 1].date;
-                    $scope.lastPaymentDate = monthNames[lastDate.getMonth()] + ", " + lastDate.getFullYear();
+                    var installment = parseInt(loan.installments[i].sum);
+                    installmentOptions.push(calculateSingleInstallment(sum, interest, installment));
                 }
 
+                $scope.calculations = [];
+                for (var i = 0; i < installmentOptions.length; i++) {
+                    var totalInterestCharge = 0;
+                    installmentOptions[i].forEach(function (n) { totalInterestCharge += n.monthlyCost });
+                    var lastDate =  installmentOptions[i][installmentOptions[i].length - 1].date;
+
+                    $scope.calculations.push({
+                        totalInterestCharge: totalInterestCharge.toFixed(),
+                        lastPaymentDate: monthNames[lastDate.getMonth()] + ", " + lastDate.getFullYear(),
+                        installment: loan.installments[i].sum
+                    });                 
+                }
+
+                var payments = [];
+
+                for (var index = 0; index < installmentOptions[lowestInstallmentIndex].length; index++) {
+                    var currentDate = installmentOptions[lowestInstallmentIndex][index].date;
+                    var monthly = [];
+                    var sums = [];
+                    for (var option = 0; option < installmentOptions.length; option++) {
+                        var currentOption = installmentOptions[option];
+                        if (currentOption.length > index) {
+                            monthly.push(installmentOptions[option][index].monthlyCost);
+                            sums.push(installmentOptions[option][index].sum);
+                        } else {
+                            monthly.push(0);
+                            sums.push(0);
+                        }
+                    }
+
+                    payments.push({ date: currentDate, monthly: monthly, sums: sums, year: currentDate.getFullYear() });
+                }
+
+
+                var currentYear = new Date().getFullYear();
+                var yearlySums = {};
+
+                var model = [];
+                
+                addYearlyArray(yearlySums, installmentOptions, currentYear);
+
+                for (var i = 0; i < payments.length; i++) {
+                    var currentPayment = payments[i];
+                    if (currentYear < currentPayment.year) {
+
+                        model.push({ date: currentPayment.date, monthly: yearlySums[currentYear].map(function (val) { return val.toFixed(); }), isSummary: true });
+
+                        currentYear++;
+                        addYearlyArray(yearlySums, installmentOptions, currentYear);
+                    } 
+                    currentPayment.monthly.forEach(function (val, index) { yearlySums[currentYear][index] += val; });
+                    model.push({ date: currentPayment.date, monthly: currentPayment.monthly.map(function (val) { return val.toFixed(); }), sums: currentPayment.sums.map(function (val) { return val.toFixed(); }) });
+                }
+                
+                $scope.payments = model;
+
+               
+            };
+
+            var addYearlyArray = function (yearlySums, installmentOptions, year) {
+                yearlySums[year] = [];
+                for (var i = 0; i < installmentOptions.length; i++) {
+                    yearlySums[year][i] = 0;
+                }
             };
         });
 
@@ -407,12 +504,14 @@
                 interest: "5.00",
                 sum: "100000",
                 installment: "1000",
-                active: true
+                active: true,
+                installments: [{ sum: "1000" }, { sum: "2000" }]
             }, {
                 name: "Ett annat lån",
                 interest: "7.23",
                 sum: "100000",
                 installment: "1500",
+                installments: [{ sum: "1000" }, { sum: "2000" }],
                 active: false
             }];
 
