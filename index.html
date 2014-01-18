@@ -85,6 +85,27 @@
 .table > tbody + tbody {
   border:0;
 }
+
+.calculation-headline-row h4, .calculation-headline-row td {
+	margin-top:0;
+	margin-bottom:0;
+	padding-top:0px;
+	padding-bottom:0;
+}
+
+.calculation-headline-row  {
+	border-top:1px solid #E24E35;
+	border-bottom:1px solid #E24E35;
+	margin-top:0;
+	margin-bottom:0;
+	padding-top:0;
+	padding-bottom:0;
+}
+
+.summary-row {
+	border-top:1px solid #E24E35;
+	border-bottom:1px solid #E24E35;
+}
     </style>
 </head>
 <body>
@@ -201,8 +222,8 @@
 
                                 <table class="table">
                                     <tbody ng-repeat="calculation in calculations">
-                                        <tr class="first-row">
-                                            <td colspan="2" class="active"><small>Amortering {{calculation.installment}}:-</small></td>
+                                        <tr class="first-row calculation-headline-row">
+                                            <td colspan="2" class="active"><h4>{{calculation.installment}}:- i amortering</h4></td>
                                         </tr>
                                         <tr>
                                             <td>Avbetalt</td>
@@ -217,18 +238,25 @@
 
                                 <button type="button" class="btn btn-primary pull-right" ng-click="showPayments=!showPayments">Tabell</button>
 
-                                 <table class="table" ng-if="showPayments">
-                                    <!--<thead>
+                                 
+                            </div>
+                        </div>
+						
+						<div class="row" ng-if="showPayments">
+						<table class="table table-striped table-hover" >
+                                    <thead>
                                         <tr>
                                             <th>Datum</th>
-                                            <th ng-repeat="">Ränta</th>
+                                            <th>Ränta</th>
                                             <th>Totalt</th>
                                         </tr>
-                                    </thead>-->
+                                    </thead>
                                      <tbody>
-                                         <tr ng-repeat="payment in payments|limitTo:paymentLimit">
+                                         <tr ng-repeat="payment in payments|limitTo:paymentLimit" ng-class="{'summary-row success': payment.isSummary}">
                                             <td><span ng-show="!payment.isSummary">{{payment.date|date:'yyyy-MM'}}</span><span ng-show="payment.isSummary">{{payment.date|date:'yyyy'}}</span></td>
                                             <td ng-repeat="value in payment.monthly">{{value}}</td>
+											 <td ng-repeat="sum in payment.sums">{{sum}}</td> 
+											 <td ng-repeat="installment in payment.installments">{{installment}}</td> 
                                         </tr>
                                      </tbody>
                                      <tfoot>
@@ -239,8 +267,7 @@
                                          </tr>
                                      </tfoot>
                                 </table>
-                            </div>
-                        </div>
+						</div>
                         
 
                     </div>
@@ -420,7 +447,7 @@
                 var lowestInstallment = 0;
                 var lowestInstallmentIndex = 0;
                 for (var i = 0; i < loan.installments.length; i++) {
-
+					loan.installments[i].sum = parseFloat(loan.installments[i].sum);
                     if (lowestInstallment < loan.installments[i].sum) {
                         lowestInstallment = loan.installments[i];
                         lowestInstallmentIndex = i;
@@ -475,18 +502,17 @@
                     var currentPayment = payments[i];
                     if (currentYear < currentPayment.year) {
 
-                        model.push({ date: currentPayment.date, monthly: yearlySums[currentYear].map(function (val) { return val.toFixed(); }), isSummary: true });
+                        model.push({ date: currentPayment.date, monthly: yearlySums[currentYear].map(function (val) { return val.toFixed(); }), sums: [], isSummary: true });
 
                         currentYear++;
                         addYearlyArray(yearlySums, installmentOptions, currentYear);
-                    } 
+                    }
                     currentPayment.monthly.forEach(function (val, index) { yearlySums[currentYear][index] += val; });
-                    model.push({ date: currentPayment.date, monthly: currentPayment.monthly.map(function (val) { return val.toFixed(); }), sums: currentPayment.sums.map(function (val) { return val.toFixed(); }) });
+                    model.push({ installments: loan.installments.map( function(val, i) {  return (val.sum + currentPayment.monthly[i]).toFixed() }),  date: currentPayment.date, monthly: currentPayment.monthly.map(function (val) { return val.toFixed(); }), sums: currentPayment.sums.map(function (val) { return val.toFixed(); }) });
                 }
                 
                 $scope.payments = model;
 
-               
             };
 
             var addYearlyArray = function (yearlySums, installmentOptions, year) {
