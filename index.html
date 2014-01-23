@@ -146,20 +146,11 @@
 
             <div class="col-md-12">
                 <div class="locked" ng-hide="loan.active">
-                    <button type="button" class="btn btn-lg btn-primary" ng-click="activate(loan)">Lägg till ny beräkning</button>
+                    <button type="button" class="btn btn-lg btn-primary" ng-click="activate(loan)">Lägg till ytterligare beräkning</button>
                 </div>
                 <div class="panel panel-default" ng-class="{'panel-locked': !loan.active}" >
                     <div class="panel-heading">
                         <span  contenteditable>{{loan.name}}</span>
-                        <div class="pull-right">
-                            <a href="">
-                            <i  class="fa fa-money"></i>
-                                </a>
-                            <a>
-                            <i class="fa fa-usd"></i>
-                                </a>
-                        </div>
-                        
                     </div>
                     <div class="panel-body">
                         <div class="row">
@@ -225,7 +216,7 @@
 
                         <div class="row">
                             <div class="col-md-10 col-md-offset-1" style="text-align:center;">
-                                <button type="button" class="btn btn-primary" ng-click="showPayments=!showPayments">Visa räknekostnad per år</button>
+                                <button type="button" class="btn btn-primary" ng-click="showPayments=!showPayments"><span ng-show="!showPayments"> Visa räntekostnad per år</span><span ng-show="showPayments">Dölj räknekostnad per år</span></button>
                             </div>
                         </div>
 						
