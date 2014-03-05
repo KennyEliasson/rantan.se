@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <!-- Bootstrap -->
-      <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,400italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,400italic' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Oswald:400,700' rel='stylesheet' type='text/css'>
     <link href="content/css/bootstrap.min.css" rel="stylesheet">
     <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
-    
+
 
 
 
@@ -22,8 +22,6 @@
 
 
     <style type="text/css">
-
-
         body {
             color: #555555;
             font-family: 'Open Sans',Arial,Helvetica,sans-serif;
@@ -39,16 +37,16 @@
         }
 
         .logo-icon {
-            font-size:100px;
+            font-size: 100px;
         }
 
         .color {
-            color:#E24E35
+            color: #E24E35;
         }
 
         header {
             margin-top: 30px;
-            text-align:center;
+            text-align: center;
         }
 
         footer {
@@ -70,36 +68,44 @@
         }
 
         .locked {
-            z-index:1000;position:absolute;left:0;right:0;margin:auto;text-align:center;top:0;bottom:0;height:25px;
+            z-index: 1000;
+            position: absolute;
+            left: 0;
+            right: 0;
+            margin: auto;
+            text-align: center;
+            top: 0;
+            bottom: 0;
+            height: 25px;
         }
 
         .fa {
-            font-size:25px;
-            color:white;
+            font-size: 25px;
+            color: white;
         }
 
-     
 
-.calculation-headline-row h4, .calculation-headline-row td {
-	margin-top:0;
-	margin-bottom:0;
-	padding-top:0px;
-	padding-bottom:0;
-}
 
-.calculation-headline-row  {
-	border-top:1px solid #E24E35;
-	border-bottom:1px solid #E24E35;
-	margin-top:0;
-	margin-bottom:0;
-	padding-top:0;
-	padding-bottom:0;
-}
+        .calculation-headline-row h4, .calculation-headline-row td {
+            margin-top: 0;
+            margin-bottom: 0;
+            padding-top: 0px;
+            padding-bottom: 0;
+        }
 
-.summary-row {
-	border-top:1px solid #E24E35;
-	border-bottom:1px solid #E24E35;
-}
+        .calculation-headline-row {
+            border-top: 1px solid #E24E35;
+            border-bottom: 1px solid #E24E35;
+            margin-top: 0;
+            margin-bottom: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .summary-row {
+            border-top: 1px solid #E24E35;
+            border-bottom: 1px solid #E24E35;
+        }
     </style>
 </head>
 <body>
@@ -112,21 +118,21 @@
                         <div class="logo-icon">
                             <span class="glyphicon glyphicon-thumbs-up" style=""></span>
                         </div>
-                        
+
                         <h1 class="color">Räntan.se</h1>
-                        
+
                     </div>
                 </div>
-                
+
             </div>
 
             <div class="row">
                 <div class="col-md-12 col-sm-12">
                     <div class="description">
-                        
+
                         <p>
                             Räkna snabbt ut dina räntekostnander. Jämför hur olika räntor och amorteringsbelopp påverkar din ekonomi.
-                            </p>
+                        </p>
                         <p>
                             Vi hjälper dig ta rätt beslut om dina lån.
                         </p>
@@ -143,12 +149,11 @@
 
     <div class="container" ng-controller="CalculateController">
         <div class="row" ng-repeat="loan in loans" ng-controller="LoanController">
-
             <div class="col-md-12">
                 <div class="locked" ng-hide="loan.active">
                     <button type="button" class="btn btn-lg btn-primary" ng-click="activate(loan)">Lägg till ytterligare beräkning</button>
                 </div>
-                <div class="panel panel-default" ng-class="{'panel-locked': !loan.active}" >
+                <div class="panel panel-default" ng-class="{'panel-locked': !loan.active}">
                     <div class="panel-heading">
                         <span contenteditable>{{loan.name}}</span>
                     </div>
@@ -165,7 +170,7 @@
                                 <div class="col-xs-4">
                                     <strong>Amortering</strong>
                                 </div>
-                                
+
                             </div>
                             <div class="col-xs-5">
                                 <div class="col-xs-6">
@@ -177,7 +182,7 @@
                             </div>
                         </div>
 
-                        <div class="row" style="margin-bottom:16px;" ng-repeat="calculation in loan.calculations" ng-controller="CalculationController">
+                        <div class="row" style="margin-bottom: 16px;" ng-repeat="calculation in loan.calculations" ng-controller="CalculationController">
 
                             <div class="col-xs-7">
                                 <div class="col-xs-4">
@@ -211,119 +216,19 @@
                         </div>
                         <div class="row">
                             <div class=" col-xs-12">
-                            <div class="form-group">
-                                        
-                                        <div class="col-xs-3">
-                                            <button class="btn btn-primary" ng-click="addCalculation()">+ Lägg till beräkning</button>
-                                            
-                                        </div>
+                                <div class="form-group">
+
+                                    <div class="col-xs-3">
+                                        <button class="btn btn-primary" ng-click="addCalculation()">+ Lägg till beräkning</button>
+
                                     </div>
                                 </div>
-                            
-                        </div>
-
-
-                        <!--
-                        <div class="row">
-                            <div class="col-md-6">
-
-                                
-                                <form class="form-horizontal">
-                                    <div class="form-group">
-                                        <label class="col-lg-4 control-label">Lånebelopp</label>
-                                        <div class="col-lg-4">
-                                            <input type="text" ng-model="loan.sum" class="form-control">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-lg-4 control-label">Räntesats</label>
-                                        <div class="col-lg-3">
-                                            <div class="input-group">
-                                                <input type="text" ng-model="loan.interest" class="form-control">
-                                                <span class="input-group-addon">%</span>
-                                            </div>
-
-                                        </div>
-                                    </div>
-
-                                     <div class="form-group" ng-repeat="installment in loan.installments">
-                                        <label class="col-lg-4 control-label">Amortering #{{$index+1}}</label>
-                                        <div class="col-lg-3">
-                                            <input type="text" ng-model="installment.sum" class="form-control">
-                                        </div>
-                                        <span>i månaden</span>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label class="col-lg-4 control-label"></label>
-                                        <div class="col-lg-3">
-                                            <button ng-click="addInstallment()" type="button" class="btn btn-primary btn-sm pull-right"><i class="glyphicon glyphicon-plus"></i> Jämför med...</button>
-                                        </div>
-                                    </div>
-                                    
-                                        
-                                </form>
                             </div>
 
-                            <div class="col-md-6">
-
-                                <table class="table">
-                                    <tbody ng-repeat="calculation in calculations">
-                                        <tr class="first-row calculation-headline-row">
-                                            <td colspan="2" class="active"><h4>{{calculation.installment}}:- i amortering</h4></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Avbetalt</td>
-                                            <td>{{calculation.lastPaymentDate}}</td>
-                                        </tr>
-                                        <tr class="last-row">
-                                            <td>Total räntekostnad</td>
-                                            <td>{{calculation.totalInterestCharge}}:-</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
- 
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-10 col-md-offset-1" style="text-align:center;">
-                                <button type="button" class="btn btn-primary" ng-click="showPayments=!showPayments"><span ng-show="!showPayments"> Visa räntekostnad per år</span><span ng-show="showPayments">Dölj räknekostnad per år</span></button>
-                            </div>
-                        </div>
-						
-						<div class="row" ng-if="showPayments">
-                            <div class="col-md-10 col-md-offset-1">
-						        <table class="table table-striped table-hover" >
-                                    <thead>
-                                        <tr>
-                                            <th rowspan="2"></th>
-                                            <th colspan="{{loan.installments.length}}"></th>
-                                        </tr>
-                                        <tr>
-                                            <th ng-repeat="installment in loan.installments" class="installment-{{$index}}">{{installment.sum}}:- i amortering</th>
-                                        </tr>
-                                    </thead>
-                                        <tbody>
-                                            <tr ng-repeat="payment in payments|limitTo:paymentLimit">
-                                            <td><span>{{payment.year}}</span></td>
-                                            <td ng-repeat="value in payment.sums track by $index" class="installment-{{$index}}">{{value}}</td>
-                                        </tr>
-                                        </tbody>
-                                        <tfoot>
-                                            <tr>
-                                                <td colspan="99">
-                                                    <button type="button" class="btn btn-primary" ng-show="paymentLimit < payments.length" ng-click="paymentLimit=paymentLimit+12">Mer..</button>
-                                                </td>
-                                            </tr>
-                                        </tfoot>
-                                </table>
-						    </div>
-                        
                         </div>
 
 
-                        -->
+
                     </div>
 
 
@@ -335,7 +240,7 @@
 
     <div class="clearfix">&nbsp;</div>
 
-    
+
     <footer>
         <div class="container">
             <div class="contact">
@@ -364,7 +269,7 @@
                                         <input type="text" id="email" class="form-control">
                                     </div>
                                 </div>
-                                
+
                                 <div class="form-group">
                                     <label for="comment" class="control-label col-md-3">Meddelande</label>
                                     <div class="col-md-9">
@@ -399,7 +304,6 @@
                                     <address class="small">
                                         <span class="bold company"><i class="icon-user color"></i>Kenny Eliasson</span><br>
                                         <i class="icon-envelope-alt color"></i>kenny@codespark.se<br>
-                       
                                     </address>
                                 </div>
                             </div>
@@ -432,7 +336,7 @@
     </footer>
 
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.2/angular.min.js"></script>
-    
+
     <script type="text/javascript">
 
         (function (i, s, o, g, r, a, m) {
@@ -478,9 +382,9 @@
 
                 result.totalInterestCharge = result.totalInterestCharge.toFixed();
                 result.payments = payments;
-                var lastDate = payments[payments.length-1].date
+                var lastDate = payments[payments.length - 1].date
                 result.lastPaymentDate = monthNames[lastDate.getMonth()] + ", " + lastDate.getFullYear();
-                
+
                 return result;
             };
 
@@ -491,21 +395,21 @@
                 var amount = calculation.amount;
 
                 calculation.result = calculateSingleInstallment(amount, interest, calculation.installment);
-                
+
             }
         });
 
         yomoApp.controller("LoanController", function ($scope) {
-            
+
             var loan = $scope.loan;
 
             $scope.addCalculation = function () {
 
-                var copy = angular.copy(loan.calculations[loan.calculations.length-1]);
+                var copy = angular.copy(loan.calculations[loan.calculations.length - 1]);
                 loan.calculations.push(copy);
 
             };
-          
+
         });
 
         yomoApp.controller("CalculateController", function ($scope) {
@@ -518,34 +422,23 @@
                     installment: "1000",
                 }],
                 active: true
-            }];
-
-            /*
-            $scope.calculations = [{
-                name: "Lån #1",
-                interest: "5.00",
-                sum: "100000",
-                installment: "1000",
-                active: true,
-                installments: [{ sum: "1000" }, { sum: "2000" }]
             }, {
-                name: "Ett annat lån",
-                interest: "7.23",
-                sum: "100000",
-                installment: "1500",
-                installments: [{ sum: "1000" }, { sum: "2000" }],
+                name: "Lån #2",
+                calculations: [{
+                    interest: "5.00",
+                    amount: "100000",
+                    installment: "1000",
+                }],
                 active: false
-            }];*/
+            }];
 
             $scope.paymentLimit = 12;
 
             $scope.activate = function (loan) {
-                var copy = angular.copy(loan);
-                loan.active = true;
-                $scope.calculations.push(copy);
+                var copy = angular.copy($scope.loans[$scope.loans.length - 2]); //Copy the last loan
+                copy.active = true;
+                $scope.loans.splice($scope.loans.length - 1, 0, copy);
             };
-
-
         });
     </script>
 
