@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html ng-app="yomoApp">
 <head>
-    <title>Räntan.se</title>
+    <title>Räntan.se - Räkna och jämför räntor</title>
+    <meta name="description" content="Med hjälp av Räntan.se kan du snabbt och lätt räkna ut räntekostnader på dina lån. Jämför räntor och amorteringar för att snabbt ske skillnaden på räntekostnader" >
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <!-- Bootstrap -->
@@ -9,9 +10,6 @@
     <link href='http://fonts.googleapis.com/css?family=Oswald:400,700' rel='stylesheet' type='text/css'>
     <link href="content/css/bootstrap.min.css" rel="stylesheet">
     <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
-
-
-
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -49,15 +47,6 @@
             text-align: center;
         }
 
-        footer {
-            background: url("fback.png") repeat scroll 0 0 rgba(0, 0, 0, 0);
-            border-top: 3px solid #E24E35;
-            color: #DDDDDD;
-            font-size: 14px;
-            margin-top: 30px;
-            padding: 10px 0;
-        }
-
         .panel .panel-heading {
             background-color: #E24E35;
             color: #fff;
@@ -79,33 +68,18 @@
             height: 25px;
         }
 
-        .fa {
-            font-size: 25px;
-            color: white;
+        .navbar {
+            min-height:32px;
+            text-align:right
+        }
+
+        .dropdown-menu {
+            display: block;
+            text-align:right;
+            min-width:50px;
         }
 
 
-
-        .calculation-headline-row h4, .calculation-headline-row td {
-            margin-top: 0;
-            margin-bottom: 0;
-            padding-top: 0px;
-            padding-bottom: 0;
-        }
-
-        .calculation-headline-row {
-            border-top: 1px solid #E24E35;
-            border-bottom: 1px solid #E24E35;
-            margin-top: 0;
-            margin-bottom: 0;
-            padding-top: 0;
-            padding-bottom: 0;
-        }
-
-        .summary-row {
-            border-top: 1px solid #E24E35;
-            border-bottom: 1px solid #E24E35;
-        }
     </style>
 </head>
 <body>
@@ -198,10 +172,24 @@
                                     </div>
                                 </div>
                                 <div class="col-xs-4">
+
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" ng-show="calculation.mode==1" ng-model="calculation.installment">
+                                        <input type="text" class="form-control" ng-show="calculation.mode==2" ng-model="calculation.years">
+      <div class="input-group-btn">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" ng-click="showModes=!showModes">{{modeText(calculation.mode)}}<span class="caret"></span></button>
+        <ul class="dropdown-menu pull-right" ng-show="showModes">
+          <li><a href="" ng-click="calculation.mode=1;showModes=false">kr</a></li>
+          <li><a href="" ng-click="calculation.mode=2;showModes=false">år</a></li>
+        </ul>
+      </div><!-- /btn-group -->
+    </div><!-- /input-group -->
+
+                                    <!--
                                     <div class="input-group">
                                         <input type="text" ng-model="calculation.installment" class="form-control">
                                         <span class="input-group-addon">kr</span>
-                                    </div>
+                                    </div>-->
                                 </div>
                             </div>
 
@@ -228,7 +216,6 @@
                         </div>
 
 
-
                     </div>
 
 
@@ -238,102 +225,16 @@
 
     </div>
 
-    <div class="clearfix">&nbsp;</div>
+    
+
+    <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+      <div class="container">
+            &copy; <a href="http://codespark.se">Codespark.se</a>
+      </div>
+</nav>
 
 
-    <footer>
-        <div class="container">
-            <div class="contact">
-                <div class="row">
-                    <div class="col-md-12 col-sm-12">
-                        <div class="up"><a class="anchorLink" href="#top"><i class="icon-caret-up"></i></a></div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 col-sm-6">
-                        <div class="form padd">
-                            <!-- Contact title -->
-                            <h4>Kontakta oss</h4>
-                            <hr>
-                            <!-- Contact form -->
-                            <form class="form-horizontal">
-                                <div class="form-group">
-                                    <label for="name" class="control-label col-md-3">Namn</label>
-                                    <div class="col-md-9">
-                                        <input type="text" id="name" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="email" class="control-label col-md-3">Email</label>
-                                    <div class="col-md-9">
-                                        <input type="text" id="email" class="form-control">
-                                    </div>
-                                </div>
 
-                                <div class="form-group">
-                                    <label for="comment" class="control-label col-md-3">Meddelande</label>
-                                    <div class="col-md-9">
-                                        <textarea rows="3" id="comment" class="form-control"></textarea>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="col-md-9 col-md-offset-3">
-                                        <button class="btn btn-danger" type="submit">Skicka</button>
-                                        <button class="btn btn-default" type="reset">Rensa</button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-sm-6">
-                        <!-- Google maps -->
-                        <div class="gmap">
-                            <iframe scrolling="no" height="250" frameborder="0" src="http://maps.google.co.in/maps?f=q&amp;source=s_q&amp;hl=en&amp;geocode=&amp;q=Hampton+Court+Palace,+East+Molesey,+United+Kingdom&amp;aq=2&amp;oq=London&amp;sll=9.930582,78.12303&amp;sspn=0.192085,0.308647&amp;ie=UTF8&amp;hq=Hampton+Court+Palace,+East+Molesey,+United+Kingdom&amp;ll=51.404615,-0.341578&amp;spn=0.013921,0.032015&amp;t=m&amp;output=embed" marginwidth="0" marginheight="0"></iframe>
-                        </div>
-                        <hr>
-                        <!-- Address -->
-                        <div class="address">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <address class="small">
-                                        <span class="bold company"><i class="icon-globe color"></i>Codespark</span><br>
-                                        Halmstad<br>
-                                    </address>
-                                </div>
-                                <div class="col-md-6">
-                                    <address class="small">
-                                        <span class="bold company"><i class="icon-user color"></i>Kenny Eliasson</span><br>
-                                        <i class="icon-envelope-alt color"></i>kenny@codespark.se<br>
-                                    </address>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <hr>
-            <!-- Copyright info -->
-            <div class="row copy">
-                <div class="col-md-5 col-sm-5">
-                    <div class="padd">
-                        <p>Copyright &copy; <a href="#">Räntan.se, Codespark</a></p>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-3 col-sm-offset-4 col-md-offset-4">
-                    <div class="padd">
-                        <!-- Social media icons. Replace # with your profile link -->
-                        <div class="social">
-                            <a href="#"><i class="icon-facebook"></i></a>
-                            <a href="#"><i class="icon-twitter"></i></a>
-                            <a href="#"><i class="icon-linkedin"></i></a>
-                            <a href="#"><i class="icon-google-plus"></i></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="clearfix"></div>
-        </div>
-    </footer>
 
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.2/angular.min.js"></script>
 
@@ -355,6 +256,13 @@
 
         yomoApp.controller("CalculationController", function ($scope) {
             var calculation = $scope.calculation;
+
+            $scope.modeText = function (mode) {
+                if (mode == 2)
+                    return "år";
+
+                return "kr";
+            }
 
             $scope.$watch("calculation.interest + calculation.amount + calculation.installment", function () {
                 calculate(calculation);
@@ -420,6 +328,8 @@
                     interest: "5.00",
                     amount: "100000",
                     installment: "1000",
+                    mode: 1,
+                    years: 10
                 }],
                 active: true
             }, {
@@ -428,6 +338,8 @@
                     interest: "5.00",
                     amount: "100000",
                     installment: "1000",
+                    mode: 1,
+                    years: 10
                 }],
                 active: false
             }];
