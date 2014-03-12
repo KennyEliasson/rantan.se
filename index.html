@@ -2,7 +2,7 @@
 <html ng-app="yomoApp">
 <head>
     <title>Räntan.se - Räkna och jämför räntor</title>
-    <meta name="description" content="Med hjälp av Räntan.se kan du snabbt och lätt räkna ut räntekostnader på dina lån. Jämför räntor och amorteringar för att snabbt ske skillnaden på räntekostnader" >
+    <meta name="description" content="Med hjälp av Räntan.se kan du snabbt och lätt räkna ut räntekostnader på dina lån. Jämför räntor och amorteringar för att snabbt ske skillnaden på räntekostnader">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <!-- Bootstrap -->
@@ -69,17 +69,15 @@
         }
 
         .navbar {
-            min-height:32px;
-            text-align:right
+            min-height: 32px;
+            text-align: right;
         }
 
         .dropdown-menu {
             display: block;
-            text-align:right;
-            min-width:50px;
+            text-align: right;
+            min-width: 50px;
         }
-
-
     </style>
 </head>
 <body>
@@ -148,9 +146,9 @@
                             </div>
                             <div class="col-xs-5">
                                 <div class="col-xs-6">
-                                    <strong>Avbetalt</strong>
+                                    <strong>Avbetalt om</strong>
                                 </div>
-                                <div class="col-xs-6">
+                                <div class="col-xs-6 text-right">
                                     <strong>Räntekostnad</strong>
                                 </div>
                             </div>
@@ -172,32 +170,32 @@
                                     </div>
                                 </div>
                                 <div class="col-xs-4">
-
                                     <div class="input-group">
-                                        <input type="text" class="form-control" ng-show="calculation.mode==1" ng-model="calculation.installment">
-                                        <input type="text" class="form-control" ng-show="calculation.mode==2" ng-model="calculation.years">
-      <div class="input-group-btn">
-        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" ng-click="showModes=!showModes">{{modeText(calculation.mode)}}<span class="caret"></span></button>
-        <ul class="dropdown-menu pull-right" ng-show="showModes">
-          <li><a href="" ng-click="calculation.mode=1;showModes=false">kr</a></li>
-          <li><a href="" ng-click="calculation.mode=2;showModes=false">år</a></li>
-        </ul>
-      </div><!-- /btn-group -->
-    </div><!-- /input-group -->
-
-                                    <!--
-                                    <div class="input-group">
-                                        <input type="text" ng-model="calculation.installment" class="form-control">
+                                        <input type="text" ng-change="calculation.mode=1;calculate(calculation)" ng-model="calculation.installment" class="form-control">
                                         <span class="input-group-addon">kr</span>
-                                    </div>-->
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="col-xs-5">
                                 <div class="col-xs-6">
-                                    <span>{{calculation.result.lastPaymentDate}}</span>
+                                    
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" ng-show="calculation.dateMode==2" ng-change="calculation.mode=2;calculate(calculation)" ng-model="calculation.years">
+                                        <input type="text" class="form-control" ng-show="calculation.dateMode==1" ng-change="calculation.mode=3;calculate(calculation)" ng-model="calculation.months">
+                                        <div class="input-group-btn">
+                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" ng-click="showModes=!showModes">{{modeText(calculation.dateMode)}}<span class="caret"></span></button>
+                                            <ul class="dropdown-menu pull-right" ng-show="showModes">
+                                                <li><a href="" ng-click="calculation.dateMode=2;showModes=false">år</a></li>
+                                                <li><a href="" ng-click="calculation.dateMode=1;showModes=false">månader</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+
+                                    <span class="pull-right text-right">i {{calculation.result.lastPaymentDate}}</span>
                                 </div>
-                                <div class="col-xs-6">
+                                <div class="col-xs-6 text-right">
                                     <span>{{calculation.result.totalInterestCharge}} kr</span>
                                 </div>
                             </div>
@@ -208,7 +206,6 @@
 
                                     <div class="col-xs-3">
                                         <button class="btn btn-primary" ng-click="addCalculation()">+ Lägg till beräkning</button>
-
                                     </div>
                                 </div>
                             </div>
@@ -225,16 +222,13 @@
 
     </div>
 
-    
+
 
     <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
-      <div class="container">
+        <div class="container">
             &copy; <a href="http://codespark.se">Codespark.se</a>
-      </div>
-</nav>
-
-
-
+        </div>
+    </nav>
 
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.2/angular.min.js"></script>
 
@@ -258,17 +252,42 @@
             var calculation = $scope.calculation;
 
             $scope.modeText = function (mode) {
-                if (mode == 2)
+                if (mode == 1)
+                    return "månader";
+                if(mode == 2)
                     return "år";
-
-                return "kr";
             }
 
-            $scope.$watch("calculation.interest + calculation.amount + calculation.installment", function () {
+            $scope.$watch("calculation.interest + calculation.amount", function () {
                 calculate(calculation);
             });
 
-            var calculateSingleInstallment = function (sum, interest, installment) {
+            var calculateCostsByTime = function (sum, interest, months) {
+                
+                var installment = sum / months;
+                $scope.calculation.installment = installment;
+                return calculateCosts(sum, interest, installment);
+            }
+
+            var calculateCostsByInstallment = function (sum, interest, installment) {
+                var result = calculateCosts(sum, interest, installment);
+
+                var months = monthDiff(new Date(), result.lastDate);
+                $scope.calculation.months = months;
+                $scope.calculation.years = months / 12;
+
+                return result;
+            };
+
+            var monthDiff = function(d1, d2) {
+                var months;
+                months = (d2.getFullYear() - d1.getFullYear()) * 12;
+                months -= d1.getMonth() + 1;
+                months += d2.getMonth();
+                return months <= 0 ? 0 : months;
+            }
+
+            var calculateCosts = function (sum, interest, installment) {
 
                 if (installment < 100)
                     return [];
@@ -290,19 +309,31 @@
 
                 result.totalInterestCharge = result.totalInterestCharge.toFixed();
                 result.payments = payments;
+                
                 var lastDate = payments[payments.length - 1].date
+                result.lastDate = lastDate;
                 result.lastPaymentDate = monthNames[lastDate.getMonth()] + ", " + lastDate.getFullYear();
 
                 return result;
             };
 
+            $scope.calculate = function (calculation) {
+                calculate(calculation);
+            }
+
             var calculate = function (calculation) {
+
+                console.log("räknar");
 
                 var interest = calculation.interest / 100;
                 var totalInterestCharge = 0;
                 var amount = calculation.amount;
 
-                calculation.result = calculateSingleInstallment(amount, interest, calculation.installment);
+                if (calculation.mode == 1) {
+                    calculation.result = calculateCostsByInstallment(amount, interest, calculation.installment);
+                } else {
+                    calculation.result = calculateCostsByTime(amount, interest, calculation.months);
+                }
 
             }
         });
@@ -312,12 +343,9 @@
             var loan = $scope.loan;
 
             $scope.addCalculation = function () {
-
                 var copy = angular.copy(loan.calculations[loan.calculations.length - 1]);
                 loan.calculations.push(copy);
-
             };
-
         });
 
         yomoApp.controller("CalculateController", function ($scope) {
@@ -329,7 +357,9 @@
                     amount: "100000",
                     installment: "1000",
                     mode: 1,
-                    years: 10
+                    dateMode: 1,
+                    years: 10,
+                    months: 120,
                 }],
                 active: true
             }, {
@@ -339,7 +369,9 @@
                     amount: "100000",
                     installment: "1000",
                     mode: 1,
-                    years: 10
+                    dateMode: 1,
+                    years: 10,
+                    months: 120
                 }],
                 active: false
             }];
