@@ -52,6 +52,11 @@
             color: #fff;
         }
 
+        .panel .panel-heading.deposit {
+            background-color: #428BCA;
+            color: #fff;
+        }
+
         .panel-locked {
             opacity: 0.3;
         }
@@ -134,13 +139,14 @@
         <div class="row" ng-repeat="loan in loans" ng-controller="LoanController">
             <div class="col-md-12">
                 <div class="locked" ng-hide="loan.active">
-                    <button type="button" class="btn btn-lg btn-primary" ng-click="activate(loan)">Lägg till ytterligare beräkning</button>
+                    <button type="button" class="btn btn-lg btn-primary" ng-click="activate(loan, false)">Lägg till ytterligare beräkning</button>
+                    <button type="button" class="btn btn-lg btn-primary" ng-click="activate(loan, true)">Lägg till sparränta</button>
                 </div>
                 <div class="panel panel-default" ng-class="{'panel-locked': !loan.active}">
-                    <div class="panel-heading">
+                    <div class="panel-heading" ng-class="{'deposit': loan.deposit}">
                         <span contenteditable>{{loan.name}}</span>
                     </div>
-                    <div class="panel-body">
+                    <div class="panel-body" ng-if="!loan.deposit">
 
                         <div class="row">
                             <div class="col-xs-7">
@@ -229,6 +235,80 @@
 
                     </div>
 
+
+                    <div class="panel-body deposit" ng-if="loan.deposit">
+
+                        <div class="row">
+                            <div class="col-xs-7">
+                                <div class="col-xs-4">
+                                    <strong>Startbelopp</strong>
+                                </div>
+                                <div class="col-xs-4">
+                                    <strong>Räntesats</strong>
+                                </div>
+                                <div class="col-xs-4">
+                                    <strong>Månadsinsättning</strong>
+                                </div>
+
+                            </div>
+                            <div class="col-xs-5">
+                                <div class="col-xs-6">
+                                    <strong>År</strong>
+                                </div>
+                                <div class="col-xs-6 text-right">
+                                    <strong>Totalt</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-bottom: 16px;" ng-repeat="calculation in loan.calculations" ng-controller="CalculationController">
+
+                            <div class="col-xs-7">
+                                <div class="col-xs-4">
+                                    <div class="input-group">
+                                        <input type="text" ng-model="calculation.amount" class="form-control">
+                                        <span class="input-group-addon">kr</span>
+                                    </div>
+                                </div>
+                                <div class="col-xs-4">
+                                    <div class="input-group">
+                                        <input type="text" ng-model="calculation.interest" class="form-control">
+                                        <span class="input-group-addon">%</span>
+                                    </div>
+                                </div>
+                                <div class="col-xs-4">
+                                    <div class="input-group">
+                                        <input type="text" ng-change="calculation.mode=1;calculate(calculation)" ng-model="calculation.installment" class="form-control">
+                                        <span class="input-group-addon">kr</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-5">
+                                <div class="col-xs-6">
+
+                                    <input type="text" ng-change="calculate(calculation)" ng-model="calculation.years" class="form-control">
+
+                                </div>
+                                <div class="col-xs-6 text-right">
+                                    <span>{{calculation.result.totalInterestCharge}} kr</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class=" col-xs-12">
+                                <div class="form-group">
+
+                                    <div class="col-xs-3">
+                                        <button class="btn btn-primary" ng-click="addCalculation()">+ Lägg till beräkning</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -263,6 +343,7 @@
 
         yomoApp.controller("CalculationController", function ($scope) {
             var calculation = $scope.calculation;
+            var loan = $scope.loan;
 
             $scope.modeText = function (mode) {
                 if (mode == 1)
@@ -274,6 +355,20 @@
             $scope.$watch("calculation.interest + calculation.amount", function () {
                 calculate(calculation);
             });
+
+            var calculateDeposit = function (sum, interest, installment, months) {
+                var result = parseFloat(sum);
+                installment = parseFloat(installment);
+                
+                for (var i = 0; i < months; i++) {
+                    var montlyInterestCharge = parseFloat((result * interest) / 12);
+                    console.log(montlyInterestCharge);
+                    result += montlyInterestCharge + installment;
+                    
+                }
+
+                return { lastPaymentDate: '', totalInterestCharge:  result.toFixed(2) };
+            }
 
             var calculateCostsByTime = function (sum, interest, months) {
                 var installment = sum / months;
@@ -339,15 +434,22 @@
                 var totalInterestCharge = 0;
                 var amount = calculation.amount;
 
-                if (calculation.mode == 1) {
-                    calculation.result = calculateCostsByInstallment(amount, interest, calculation.installment);
+                
+                if (loan.deposit) {
+                    console.log('tjenare');
+                    calculation.months = calculation.years * 12;
+                    calculation.result = calculateDeposit(amount, interest, calculation.installment, calculation.months);
                 } else {
-                    if (calculation.mode == 2) {
-                        calculation.months = calculation.years * 12;
-                    }
-                    calculation.result = calculateCostsByTime(amount, interest, calculation.months);
-                }
 
+                    if (calculation.mode == 1) {
+                        calculation.result = calculateCostsByInstallment(amount, interest, calculation.installment);
+                    } else {
+                        if (calculation.mode == 2) {
+                            calculation.months = calculation.years * 12;
+                        }
+                        calculation.result = calculateCostsByTime(amount, interest, calculation.months);
+                    }
+                }
             }
         });
 
@@ -391,9 +493,16 @@
 
             $scope.paymentLimit = 12;
 
-            $scope.activate = function (loan) {
+            $scope.activate = function (loan, deposit) {
                 var copy = angular.copy($scope.loans[$scope.loans.length - 2]); //Copy the last loan
                 copy.active = true;
+                
+                if(!copy.deposit && deposit) {
+                    copy.deposit = deposit;
+                    copy.name = "Sparande #1";
+                    copy.calculations[0].years = 5;
+
+                }
                 $scope.loans.splice($scope.loans.length - 1, 0, copy);
             };
         });
