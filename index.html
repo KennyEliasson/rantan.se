@@ -78,6 +78,17 @@
             text-align: right;
             min-width: 50px;
         }
+
+        .dropdown-toggle {
+            background-color:#eee;
+        }
+
+
+        .input-group-addon:not(:first-child):not(:last-child), .input-group-btn:not(:first-child):not(:last-child), .input-group .form-control:not(:first-child):not(:last-child) {
+            border-radius: 4px 0 0 4px
+        }
+
+        
     </style>
 </head>
 <body>
@@ -146,7 +157,7 @@
                             </div>
                             <div class="col-xs-5">
                                 <div class="col-xs-6">
-                                    <strong>Avbetalt om</strong>
+                                    <strong>Avbetalt</strong>
                                 </div>
                                 <div class="col-xs-6 text-right">
                                     <strong>Räntekostnad</strong>
@@ -179,21 +190,25 @@
 
                             <div class="col-xs-5">
                                 <div class="col-xs-6">
+
+
+                                    <a href="" ng-click="showDates=true" ng-show="!showDates">{{calculation.result.lastPaymentDate}}</a>
                                     
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" ng-show="calculation.dateMode==2" ng-change="calculation.mode=2;calculate(calculation)" ng-model="calculation.years">
-                                        <input type="text" class="form-control" ng-show="calculation.dateMode==1" ng-change="calculation.mode=3;calculate(calculation)" ng-model="calculation.months">
+                                    <div class="input-group" ng-show="showDates==true" >
+                                        <input type="text" class="form-control" ng-show="calculation.dateMode==2" ng-change="calculation.mode=2;calculate(calculation)" ng-blur="showDates=false" ng-model="calculation.years">
+                                        <input type="text" class="form-control round" ng-show="calculation.dateMode==1" ng-change="calculation.mode=3;calculate(calculation)" ng-blur="showDates=false" ng-model="calculation.months">
                                         <div class="input-group-btn">
-                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" ng-click="showModes=!showModes">{{modeText(calculation.dateMode)}}<span class="caret"></span></button>
-                                            <ul class="dropdown-menu pull-right" ng-show="showModes">
-                                                <li><a href="" ng-click="calculation.dateMode=2;showModes=false">år</a></li>
-                                                <li><a href="" ng-click="calculation.dateMode=1;showModes=false">månader</a></li>
+                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" ng-click="showDateModes=!showDateModes">{{modeText(calculation.dateMode)}}<span class="caret"></span></button>
+                                            <ul class="dropdown-menu pull-right" ng-show="showDateModes">
+                                                <li><a href="" ng-click="calculation.dateMode=2;showDateModes=false;">år</a></li>
+                                                <li><a href="" ng-click="calculation.dateMode=1;showDateModes=false;">månader</a></li>
                                             </ul>
                                         </div>
                                     </div>
 
-
+                                    <!--
                                     <span class="pull-right text-right">i {{calculation.result.lastPaymentDate}}</span>
+                                        -->
                                 </div>
                                 <div class="col-xs-6 text-right">
                                     <span>{{calculation.result.totalInterestCharge}} kr</span>
@@ -212,9 +227,7 @@
 
                         </div>
 
-
                     </div>
-
 
                 </div>
             </div>
@@ -263,9 +276,8 @@
             });
 
             var calculateCostsByTime = function (sum, interest, months) {
-                
                 var installment = sum / months;
-                $scope.calculation.installment = installment;
+                $scope.calculation.installment = Math.round(installment);
                 return calculateCosts(sum, interest, installment);
             }
 
@@ -274,7 +286,7 @@
 
                 var months = monthDiff(new Date(), result.lastDate);
                 $scope.calculation.months = months;
-                $scope.calculation.years = months / 12;
+                $scope.calculation.years = +(months / 12).toFixed(2);
 
                 return result;
             };
@@ -323,8 +335,6 @@
 
             var calculate = function (calculation) {
 
-                console.log("räknar");
-
                 var interest = calculation.interest / 100;
                 var totalInterestCharge = 0;
                 var amount = calculation.amount;
@@ -332,6 +342,9 @@
                 if (calculation.mode == 1) {
                     calculation.result = calculateCostsByInstallment(amount, interest, calculation.installment);
                 } else {
+                    if (calculation.mode == 2) {
+                        calculation.months = calculation.years * 12;
+                    }
                     calculation.result = calculateCostsByTime(amount, interest, calculation.months);
                 }
 
