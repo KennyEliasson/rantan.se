@@ -3,8 +3,9 @@
 <head>
     <title>Räntan.se - Räkna och jämför räntor</title>
     <meta name="description" content="Med hjälp av Räntan.se kan du snabbt och lätt räkna ut räntekostnader på dina lån. Jämför räntor och amorteringar för att snabbt ske skillnaden på räntekostnader">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <!-- Bootstrap -->
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,400italic' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Oswald:400,700' rel='stylesheet' type='text/css'>
@@ -70,7 +71,7 @@
             text-align: center;
             top: 0;
             bottom: 0;
-            height: 25px;
+            height: 80px;
         }
 
         .navbar {
@@ -119,7 +120,10 @@
                     <div class="description">
 
                         <p>
-                            Räkna snabbt ut dina räntekostnander. Jämför hur olika räntor och amorteringsbelopp påverkar din ekonomi.
+                            Räkna snabbt ut dina räntekostnader. Jämför hur olika räntor och amorteringsbelopp påverkar din ekonomi.
+                        </p>
+                        <p>
+                            Du kan även räkna på hur ett sparande påverkas över tid med hjälp av våra beräkningar.
                         </p>
                         <p>
                             Vi hjälper dig ta rätt beslut om dina lån.
@@ -127,6 +131,7 @@
 
                     </div>
                 </div>
+
 
                 <hr />
 
@@ -139,7 +144,8 @@
         <div class="row" ng-repeat="loan in loans" ng-controller="LoanController">
             <div class="col-md-12">
                 <div class="locked" ng-hide="loan.active">
-                    <button type="button" class="btn btn-lg btn-primary" ng-click="activate(loan, false)">Lägg till ytterligare beräkning</button>
+                    <button type="button" class="btn btn-lg btn-danger" ng-click="activate(loan, false)">Lägg till ytterligare beräkning</button>
+                    <br /><br />
                     <button type="button" class="btn btn-lg btn-primary" ng-click="activate(loan, true)">Lägg till sparränta</button>
                 </div>
                 <div class="panel panel-default" ng-class="{'panel-locked': !loan.active}">
@@ -226,7 +232,7 @@
                                 <div class="form-group">
 
                                     <div class="col-xs-3">
-                                        <button class="btn btn-primary" ng-click="addCalculation()">+ Lägg till beräkning</button>
+                                        <button class="btn btn-default" ng-click="addCalculation()">+ Lägg till beräkning</button>
                                     </div>
                                 </div>
                             </div>
@@ -300,7 +306,7 @@
                                 <div class="form-group">
 
                                     <div class="col-xs-3">
-                                        <button class="btn btn-primary" ng-click="addCalculation()">+ Lägg till beräkning</button>
+                                        <button class="btn btn-default" ng-click="addCalculation()">+ Lägg till beräkning</button>
                                     </div>
                                 </div>
                             </div>
@@ -338,6 +344,34 @@
         ga('send', 'pageview');
 
         var yomoApp = angular.module("yomoApp", []);
+
+        yomoApp.controller("CalculateController", function ($scope) {
+
+            $scope.loans = [{
+                name: "Lån #1",
+                calculations: [new Calculation()],
+                active: true
+            }, {
+                name: "Lån #2",
+                calculations: [new Calculation()],
+                active: false
+            }];
+
+            $scope.paymentLimit = 12;
+
+            $scope.activate = function (loan, deposit) {
+                var copy = angular.copy($scope.loans[$scope.loans.length - 2]); //Copy the last loan
+                copy.active = true;
+
+                if (!copy.deposit && deposit) {
+                    copy.deposit = deposit;
+                    copy.name = "Sparande #1";
+                    copy.calculations[0].years = 5;
+
+                }
+                $scope.loans.splice($scope.loans.length - 1, 0, copy);
+            };
+        });
 
         yomoApp.controller("CalculationController", function ($scope) {
             var calculation = $scope.calculation;
@@ -429,10 +463,7 @@
                 if (this.installment < 100)
                     return [];
 
-                
-
-                var currentDate = new Date();
-                currentDate.setMonth(currentDate.getMonth() + 1, 1); //Första månaden man skall betala, sätter dagen till 1, spelar ingen roll atm?
+                var currentDate = new Date().addMonth(1);
               
                 var result = { totalInterestCharge: 0 };
                 var payments = [];
@@ -441,7 +472,7 @@
                     var montlyInterestCharge = ((sum * interest) / 12);
                     result.totalInterestCharge += montlyInterestCharge;
                     sum = sum - this.installment;
-                    payments.push({ monthlyCost: montlyInterestCharge, sum: sum, date: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1) });
+                    payments.push({ monthlyCost: montlyInterestCharge, sum: sum, date: new Date().copy(currentDate) });
                     currentDate.setMonth(currentDate.getMonth() + 1);
                 }
 
@@ -463,40 +494,22 @@
             return months <= 0 ? 0 : months;
         }
 
+        Date.prototype.addMonth = function (months) {
+            this.setMonth(this.getMonth() + months, 1); //1 dagen i månaden kör jag på med :P
+            return this;
+        }
+
         Date.prototype.toString = function () {
             var monthNames = ['Januari', 'Februari', 'Mars', 'April', 'Maj', 'Juni', 'Juli', 'Augusti', 'September', 'Oktober', 'November', 'December'];
             return monthNames[this.getMonth()] + ", " + this.getFullYear();
         }
 
-        yomoApp.controller("CalculateController", function ($scope) {
-
-            $scope.loans = [{
-                name: "Lån #1",
-                calculations: [new Calculation()],
-                active: true
-            }, {
-                name: "Lån #2",
-                calculations: [new Calculation()],
-                active: false
-            }];
-
-            $scope.paymentLimit = 12;
-
-            $scope.activate = function (loan, deposit) {
-                var copy = angular.copy($scope.loans[$scope.loans.length - 2]); //Copy the last loan
-                copy.active = true;
-                
-                if(!copy.deposit && deposit) {
-                    copy.deposit = deposit;
-                    copy.name = "Sparande #1";
-                    copy.calculations[0].years = 5;
-
-                }
-                $scope.loans.splice($scope.loans.length - 1, 0, copy);
-            };
-        });
+        Date.prototype.copy = function (date) {
+            this.setFullYear(date.getFullYear());
+            this.setMonth(date.getMonth(), 1);
+            return this;
+        }
     </script>
-
 
 </body>
 </html>
