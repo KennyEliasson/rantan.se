@@ -398,12 +398,30 @@
                 var copy = angular.copy($scope.loans[$scope.loans.length - 2]); //Copy the last loan
                 copy.active = true;
 
-                if (!copy.deposit && deposit) {
-                    copy.deposit = deposit;
-                    copy.name = "Sparande #1";
-                    copy.calculations[0].years = 5;
 
+                var activeDeposits = $scope.loans.filter(function (loan) { return loan.active && loan.deposit; }).length;
+                var activeLoans = $scope.loans.length - activeDeposits;
+                activeDeposits += 1;
+
+
+                //Om det inte är samma typ vi lägger till!
+                if (!copy.deposit && deposit) {
+                    copy.calculations[0].years = 5;
+                    copy.calculations[0].amount = 5000;
+                    copy.calculations[0].interest = "1.2";
+                    copy.calculations[0].installment = 1000;
+                } else if (copy.deposit && !deposit) {
+                    copy.calculations[0].amount = 100000;
+                    copy.calculations[0].interest = "5";
+                    copy.calculations[0].installment = 1000;
                 }
+
+                copy.deposit = deposit;
+                copy.name = deposit ? "Sparande #" + activeDeposits : "Lån #" + activeLoans;
+                
+                    
+                
+
                 $scope.loans.splice($scope.loans.length - 1, 0, copy);
             };
         });
