@@ -545,7 +545,7 @@
                     if (payments[i].date.getFullYear() > currentYear) {
                         overviews.push(new Overview(currentYear, yearlyCost, this.installment, monthCount));
 
-                        monthCount = yearSum = 0;
+                        monthCount = yearlyCost = 0;
                         currentYear++;
                     }
 
