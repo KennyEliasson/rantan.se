@@ -553,7 +553,7 @@
                     yearlyCost += payments[i].monthlyCost;
                 }
                 //Resterande
-                overviews.push(new Overview(currentYear, yearSum, this.installment, monthCount));
+                overviews.push(new Overview(currentYear, yearlyCost, this.installment, monthCount));
 
                 overviews.push(new Overview('Total', calculationResults.totalInterestCharge, this.installment, this.months));
 
