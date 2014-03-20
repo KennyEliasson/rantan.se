@@ -591,7 +591,12 @@
             this.monthlyWithInstallment = ((sum + (installment * monthCount)) / monthCount).toRoundedLocale();
         }
 
+        Number.maxInt = 4294967295;
         Number.prototype.toRoundedLocale = function () {
+
+            if (this > Number.maxInt) { //Riiik! :)
+                return "$$$";
+            }
             return Math.round(this).toLocaleString();
         }
 
