@@ -93,6 +93,14 @@
         .input-group-addon:not(:first-child):not(:last-child), .input-group-btn:not(:first-child):not(:last-child), .input-group .form-control:not(:first-child):not(:last-child) {
             border-radius: 4px 0 0 4px;
         }
+
+        table {
+            font-size:14px;
+        }
+
+        .Installment {
+            font-size:10px;
+        }
     </style>
 </head>
 <body>
@@ -138,7 +146,7 @@
         </div>
     </header>
 
-    <div class="container" ng-controller="CalculateController">
+    <div class="container" ng-controller="CalculateController" style="min-width:800px;">
         <div class="row" ng-repeat="loan in loans" ng-controller="LoanController">
             <div class="col-md-12">
                 <div class="locked" ng-hide="loan.active">
@@ -176,66 +184,78 @@
                             </div>
                         </div>
 
-                        <div class="row" style="margin-bottom: 16px;" ng-repeat="calculation in loan.calculations" ng-controller="CalculationController">
 
-                            <div class="col-xs-7">
-                                <div class="col-xs-4">
-                                    <div class="input-group">
-                                        <input type="text" ng-model="calculation.amount" class="form-control">
-                                        <span class="input-group-addon">kr</span>
+                        <div ng-repeat="calculation in loan.calculations" ng-controller="CalculationController">
+
+                            <div class="row" style="margin-bottom: 16px;">
+
+                            
+
+                                <div class="col-xs-7">
+                                    <div class="col-xs-4">
+                                        <div class="input-group">
+                                            <input type="text" ng-model="calculation.amount" class="form-control">
+                                            <span class="input-group-addon">kr</span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-xs-4">
-                                    <div class="input-group">
-                                        <input type="text" ng-model="calculation.interest" class="form-control">
-                                        <span class="input-group-addon">%</span>
+                                    <div class="col-xs-4">
+                                        <div class="input-group">
+                                            <input type="text" ng-model="calculation.interest" class="form-control">
+                                            <span class="input-group-addon">%</span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-xs-4">
-                                    <div class="input-group">
-                                        <input type="text" ng-change="calculation.mode=1;calculate(calculation)" ng-model="calculation.installment" class="form-control">
-                                        <span class="input-group-addon">kr</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-xs-5">
-                                <div class="col-xs-6">
-
-
-                                    <a href="" ng-click="showDates=true" ng-show="!showDates">{{calculation.result.lastPaymentDate}}</a>
-
-                                    <div class="input-group" ng-show="showDates==true">
-                                        <input type="text" class="form-control" ng-show="calculation.dateMode==2" ng-change="calculation.mode=2;calculate(calculation)" ng-blur="showDates=false" ng-model="calculation.years">
-                                        <input type="text" class="form-control round" ng-show="calculation.dateMode==1" ng-change="calculation.mode=3;calculate(calculation)" ng-blur="showDates=false" ng-model="calculation.months">
-                                        <div class="input-group-btn">
-                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" ng-click="showDateModes=!showDateModes">{{modeText(calculation.dateMode)}}<span class="caret"></span></button>
-                                            <ul class="dropdown-menu pull-right" ng-show="showDateModes">
-                                                <li><a href="" ng-click="calculation.dateMode=2;showDateModes=false;">år</a></li>
-                                                <li><a href="" ng-click="calculation.dateMode=1;showDateModes=false;">månader</a></li>
-                                            </ul>
+                                    <div class="col-xs-4">
+                                        <div class="input-group">
+                                            <input type="text" ng-change="calculation.mode=1;calculate(calculation)" ng-model="calculation.installment" class="form-control">
+                                            <span class="input-group-addon">kr</span>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-xs-6 text-right">
-                                    <span>{{calculation.result.totalInterestCharge}} kr</span>
-                                </div>
 
-                                <div class="row">
-                                    <div class="col-xs-12" style="float: right; padding: 0;">
-                                        <table class="table">
+                                <div class="col-xs-5">
+                                    <div class="col-xs-6">
+
+
+                                        <a href="" ng-click="showDates=true" ng-show="!showDates">{{calculation.result.lastPaymentDate}}</a>
+
+                                        <div class="input-group" ng-show="showDates==true">
+                                            <input type="text" class="form-control" ng-show="calculation.dateMode==2" ng-change="calculation.mode=2;calculate(calculation)" ng-blur="showDates=false" ng-model="calculation.years">
+                                            <input type="text" class="form-control round" ng-show="calculation.dateMode==1" ng-change="calculation.mode=3;calculate(calculation)" ng-blur="showDates=false" ng-model="calculation.months">
+                                            <div class="input-group-btn">
+                                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" ng-click="showDateModes=!showDateModes">{{modeText(calculation.dateMode)}}<span class="caret"></span></button>
+                                                <ul class="dropdown-menu pull-right" ng-show="showDateModes">
+                                                    <li><a href="" ng-click="calculation.dateMode=2;showDateModes=false;">år</a></li>
+                                                    <li><a href="" ng-click="calculation.dateMode=1;showDateModes=false;">månader</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-6 text-right">
+                                        <span>{{calculation.result.totalInterestCharge}} kr <span ng-show="calculation.tooLowInstallment">/månad</span> <a href="" ng-show="!calculation.tooLowInstallment" ng-click="calculation.showOverview=!calculation.showOverview" ng-class="{'glyphicon-chevron-down': !calculation.showOverview, 'glyphicon-chevron-up': calculation.showOverview}" class="glyphicon "></a></span>
+                                    </div>
+
+                            
+
+                                </div>
+                            
+                            </div>
+
+                            <div class="row" ng-show="calculation.showOverview">
+                                    <div class="col-xs-6 col-xs-offset-6" style="max-height:400px;overflow:auto;">
+                                        <span class="Installment pull-right">(Siffra inom parantes avser kostnad inklusive amortering)</span>
+                                        <table class="table table-condensed table-striped table-hover">
                                             <thead>
                                                 <tr>
-                                                    <th></th>
-                                                    <th>Årskostnad</th>
-                                                    <th>Månadskostnad</th>
+                                                    <th>År</th>
+                                                    <th style="text-align:right;">Årskostnad</th>
+                                                    <th style="text-align:right;">Månadskostnad</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr ng-repeat="year in calculation.result.overview">
                                                     <td>{{year.year}}</td>
-                                                    <td>{{year.sum}}</td>
-                                                    <td>{{year.monthly}}</td>
+                                                    <td style="text-align:right;">{{year.sum}} <span class="Installment">({{year.sumWithInstallment}})</span></td>
+                                                    <td style="text-align:right;">{{year.monthly}} <span class="Installment">({{year.monthlyWithInstallment}})</span></td>
                                                 </tr>
                                             </tbody>
 
@@ -243,10 +263,7 @@
                                     </div>
                                 </div>
 
-                            </div>
                         </div>
-
-
 
                         <div class="row">
                             <div class="col-xs-12">
@@ -437,6 +454,10 @@
 
                 var interest = this.interest.replace(',', '.') / 100;
                 var totalInterestCharge = 0;
+                if (this.installment == '') {
+                    this.installment = 0;
+                }
+                this.installment = parseFloat(this.installment);
 
                 if (deposit) {
                     this.months = this.years * 12;
@@ -456,36 +477,46 @@
             },
             calculateDeposit: function (interest) {
                 var result = parseFloat(this.amount);
-                var installment = parseFloat(this.installment);
 
                 for (var i = 0; i < this.months; i++) {
                     var montlyInterestCharge = parseFloat((result * interest) / 12);
-                    result += montlyInterestCharge + installment;
+                    result += montlyInterestCharge + this.installment;
                 }
 
                 return { lastPaymentDate: '', totalInterestCharge: result.toRoundedLocale() };
             },
             calculateCostsByTime: function (interest) {
-                this.installment = Math.round(this.sum / this.months);
+                this.installment = Math.round(this.amount / this.months);
                 return this.calculateCosts(interest);
             },
             calculateCostsByInstallment: function (interest) {
                 var result = this.calculateCosts(interest);
 
-                var months = new Date().monthDiff(result.lastDate);
-                this.months = months;
-                this.years = +(months / 12).toFixed(2);
+                this.tooLowInstallment = result.tooLowInstallment;
+                if (!this.tooLowInstallment) {
+                    var months = new Date().monthDiff(result.lastDate);
+                    this.months = months;
+                    this.years = +(months / 12).toFixed(2);
+                } else {
+                    this.months = 0;
+                    this.years = 0;
+                }
+                
 
                 return result;
             },
             calculateCosts: function (interest) {
-                var sum = this.amount;
-                if (this.installment < 100)
-                    return [];
-
-                var currentDate = new Date().addMonth(1);
 
                 var result = { totalInterestCharge: 0 };
+                var sum = this.amount;
+                if (this.installment < 100) {
+                    result.tooLowInstallment = true;
+                    result.totalInterestCharge = ((sum * interest) / 12).toRoundedLocale();
+                    result.lastPaymentDate = "~";
+                    return result;
+                }
+                
+                var currentDate = new Date().addMonth(1);
                 var payments = [];
 
                 while (sum > 0) {
@@ -496,16 +527,15 @@
                     currentDate.setMonth(currentDate.getMonth() + 1);
                 }
 
+                result.overview = this.paymentOverview(payments, result);
+
                 result.totalInterestCharge = result.totalInterestCharge.toRoundedLocale();
-
-                result.overview = this.paymentOverview(payments);
-
                 result.lastDate = payments[payments.length - 1].date;
                 result.lastPaymentDate = result.lastDate.toString();
 
                 return result;
             },
-            paymentOverview: function (payments) {
+            paymentOverview: function (payments, calculationResults) {
                 var currentYear = new Date().getFullYear();
                 var overview = {};
                 overview[currentYear] = { year: currentYear };
@@ -515,7 +545,9 @@
                 for (var i = 0; i < payments.length; i++) {
                     if (payments[i].date.getFullYear() > currentYear) {
                         overview[currentYear].sum = (yearSum).toRoundedLocale();
+                        overview[currentYear].sumWithInstallment = (yearSum + (this.installment*monthCount)).toRoundedLocale();
                         overview[currentYear].monthly = (yearSum / monthCount).toRoundedLocale();
+                        overview[currentYear].monthlyWithInstallment = ((yearSum+(this.installment*monthCount)) / monthCount).toRoundedLocale();
                         monthCount = yearSum = 0;
                         currentYear++;
                         overview[currentYear] = { year: currentYear };
@@ -526,7 +558,20 @@
                 }
 
                 overview[currentYear].sum = yearSum.toRoundedLocale();
+                overview[currentYear].sumWithInstallment = (yearSum + (this.installment*12)).toRoundedLocale();
                 overview[currentYear].monthly = (yearSum / monthCount).toRoundedLocale();
+                overview[currentYear].monthlyWithInstallment = ((yearSum + (this.installment * monthCount)) / monthCount).toRoundedLocale();
+
+
+                overview.total = {
+                    year: 'Total',
+                    sum: calculationResults.totalInterestCharge.toRoundedLocale(),
+                    sumWithInstallment: (calculationResults.totalInterestCharge + (this.months * this.installment)).toRoundedLocale(),
+                   // monthly: (calculationResults.totalInterestCharge / this.months).toRoundedLocale(),
+                   // monthlyWithInstallment: ((calculationResults.totalInterestCharge + (this.installment * this.months)) / this.months).toRoundedLocale()
+                };
+
+
 
                 return overview;
             }
