@@ -238,7 +238,7 @@
                             
                             </div>
 
-                            <div class="row" ng-show="calculation.showOverview">
+                            <div class="row" ng-show="calculation.showOverview && !calculation.tooLowInstallment">
                                     <div class="col-xs-6 col-xs-offset-6" style="max-height:400px;overflow:auto;">
                                         <span class="Installment pull-right">(Siffra inom parantes avser kostnad inklusive amortering)</span>
                                         <table class="table table-condensed table-striped table-hover">
@@ -404,7 +404,7 @@
                 activeDeposits += 1;
 
 
-                //Om det inte är samma typ vi lägger till!
+                //Om det inte är samma typ vi lägger till så resetta tillbaka till "default" värden
                 if (!copy.deposit && deposit) {
                     copy.calculations[0].years = 5;
                     copy.calculations[0].amount = 5000;
@@ -419,9 +419,6 @@
                 copy.deposit = deposit;
                 copy.name = deposit ? "Sparande #" + activeDeposits : "Lån #" + activeLoans;
                 
-                    
-                
-
                 $scope.loans.splice($scope.loans.length - 1, 0, copy);
             };
         });
@@ -526,9 +523,16 @@
 
                 var result = { totalInterestCharge: 0 };
                 var sum = this.amount;
-                if (this.installment < 100) {
+                var installments = this.amount / this.installment;
+                
+                if (this.installment < 100 && installments > 1000) {
                     result.tooLowInstallment = true;
                     result.totalInterestCharge = ((sum * interest) / 12).toRoundedLocale();
+                    result.lastPaymentDate = "~";
+                    return result;
+                } else if (installments > 10000) {
+                    result.tooLowInstallment = true;
+                    result.totalInterestCharge = "~";
                     result.lastPaymentDate = "~";
                     return result;
                 }
