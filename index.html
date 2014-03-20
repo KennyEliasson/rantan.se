@@ -538,18 +538,19 @@
                 var currentYear = new Date().getFullYear();
                 var overviews = [];
 
-                var yearSum = 0;
+                var yearlyCost = 0;
                 var monthCount = 0;
+                var sum = this.amount;
                 for (var i = 0; i < payments.length; i++) {
                     if (payments[i].date.getFullYear() > currentYear) {
-                        overviews.push(new Overview(currentYear, yearSum, this.installment, monthCount));
+                        overviews.push(new Overview(currentYear, yearlyCost, this.installment, monthCount));
 
                         monthCount = yearSum = 0;
                         currentYear++;
                     }
 
                     monthCount++;
-                    yearSum += payments[i].monthlyCost;
+                    yearlyCost += payments[i].monthlyCost;
                 }
                 //Resterande
                 overviews.push(new Overview(currentYear, yearSum, this.installment, monthCount));
@@ -567,8 +568,6 @@
             this.monthly = (sum / monthCount).toRoundedLocale();
             this.monthlyWithInstallment = ((sum + (installment * monthCount)) / monthCount).toRoundedLocale();
         }
-
-
 
         Number.prototype.toRoundedLocale = function () {
             return Math.round(this).toLocaleString();
