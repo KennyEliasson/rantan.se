@@ -234,8 +234,6 @@
                                         <span>{{calculation.result.totalInterestCharge}} kr <span ng-show="calculation.tooLowInstallment">/månad</span> <a href="" ng-show="!calculation.tooLowInstallment" ng-click="calculation.showOverview=!calculation.showOverview" ng-class="{'glyphicon-chevron-down': !calculation.showOverview, 'glyphicon-chevron-up': calculation.showOverview}" class="glyphicon "></a></span>
                                     </div>
 
-                            
-
                                 </div>
                             
                             </div>
@@ -246,14 +244,14 @@
                                         <table class="table table-condensed table-striped table-hover">
                                             <thead>
                                                 <tr>
-                                                    <th>År</th>
+                                                    <th></th>
                                                     <th style="text-align:right;">Årskostnad</th>
                                                     <th style="text-align:right;">Månadskostnad</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr ng-repeat="year in calculation.result.overview">
-                                                    <td>{{year.year}}</td>
+                                                    <td>{{year.id}}</td>
                                                     <td style="text-align:right;">{{year.sum}} <span class="Installment">({{year.sumWithInstallment}})</span></td>
                                                     <td style="text-align:right;">{{year.monthly}} <span class="Installment">({{year.monthlyWithInstallment}})</span></td>
                                                 </tr>
@@ -440,6 +438,7 @@
             };
         });
 
+
         var Calculation = function () {
             this.interest = "5.00",
             this.amount = "100000",
@@ -537,45 +536,39 @@
             },
             paymentOverview: function (payments, calculationResults) {
                 var currentYear = new Date().getFullYear();
-                var overview = {};
-                overview[currentYear] = { year: currentYear };
+                var overviews = [];
 
                 var yearSum = 0;
                 var monthCount = 0;
                 for (var i = 0; i < payments.length; i++) {
                     if (payments[i].date.getFullYear() > currentYear) {
-                        overview[currentYear].sum = (yearSum).toRoundedLocale();
-                        overview[currentYear].sumWithInstallment = (yearSum + (this.installment*monthCount)).toRoundedLocale();
-                        overview[currentYear].monthly = (yearSum / monthCount).toRoundedLocale();
-                        overview[currentYear].monthlyWithInstallment = ((yearSum+(this.installment*monthCount)) / monthCount).toRoundedLocale();
+                        overviews.push(new Overview(currentYear, yearSum, this.installment, monthCount));
+
                         monthCount = yearSum = 0;
                         currentYear++;
-                        overview[currentYear] = { year: currentYear };
                     }
 
                     monthCount++;
                     yearSum += payments[i].monthlyCost;
                 }
+                //Resterande
+                overviews.push(new Overview(currentYear, yearSum, this.installment, monthCount));
 
-                overview[currentYear].sum = yearSum.toRoundedLocale();
-                overview[currentYear].sumWithInstallment = (yearSum + (this.installment*12)).toRoundedLocale();
-                overview[currentYear].monthly = (yearSum / monthCount).toRoundedLocale();
-                overview[currentYear].monthlyWithInstallment = ((yearSum + (this.installment * monthCount)) / monthCount).toRoundedLocale();
+                overviews.push(new Overview('Total', calculationResults.totalInterestCharge, this.installment, this.months));
 
-
-                overview.total = {
-                    year: 'Total',
-                    sum: calculationResults.totalInterestCharge.toRoundedLocale(),
-                    sumWithInstallment: (calculationResults.totalInterestCharge + (this.months * this.installment)).toRoundedLocale(),
-                   // monthly: (calculationResults.totalInterestCharge / this.months).toRoundedLocale(),
-                   // monthlyWithInstallment: ((calculationResults.totalInterestCharge + (this.installment * this.months)) / this.months).toRoundedLocale()
-                };
-
-
-
-                return overview;
+                return overviews;
             }
         };
+
+        var Overview = function (id, sum, installment, monthCount) {
+            this.id = id;
+            this.sum = sum.toRoundedLocale();
+            this.sumWithInstallment = (sum + (installment * monthCount)).toRoundedLocale();
+            this.monthly = (sum / monthCount).toRoundedLocale();
+            this.monthlyWithInstallment = ((sum + (installment * monthCount)) / monthCount).toRoundedLocale();
+        }
+
+
 
         Number.prototype.toRoundedLocale = function () {
             return Math.round(this).toLocaleString();
