@@ -1,0 +1,80 @@
+body {
+    color: #555555;
+    font-family: 'Open Sans',Arial,Helvetica,sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 30px;
+    background: url("back.png") repeat scroll 0 0 rgba(0, 0, 0, 0);
+    border-top: 3px solid #E24E35;
+}
+
+h1 {
+    font-family: Oswald, Arial;
+}
+
+.logo-icon {
+    font-size: 100px;
+}
+
+.color {
+    color: #E24E35;
+}
+
+header {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.panel .panel-heading {
+    background-color: #E24E35;
+    color: #fff;
+}
+
+    .panel .panel-heading.deposit {
+        background-color: #428BCA;
+        color: #fff;
+    }
+
+.panel-locked {
+    opacity: 0.3;
+}
+
+.locked {
+    z-index: 1000;
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: auto;
+    text-align: center;
+    top: 0;
+    bottom: 0;
+    height: 80px;
+}
+
+.navbar {
+    min-height: 32px;
+    text-align: right;
+}
+
+.dropdown-menu {
+    display: block;
+    text-align: right;
+    min-width: 50px;
+}
+
+.dropdown-toggle {
+    background-color: #eee;
+}
+
+
+.input-group-addon:not(:first-child):not(:last-child), .input-group-btn:not(:first-child):not(:last-child), .input-group .form-control:not(:first-child):not(:last-child) {
+    border-radius: 4px 0 0 4px;
+}
+
+table {
+    font-size:14px;
+}
+
+.Installment {
+    font-size:10px;
+}
