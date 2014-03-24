@@ -12,6 +12,10 @@ h1 {
     font-family: Oswald, Arial;
 }
 
+.container {
+     min-width:800px;
+}
+
 .logo-icon {
     font-size: 100px;
 }
@@ -66,6 +70,9 @@ header {
     background-color: #eee;
 }
 
+.calculationRow {
+    margin-bottom: 16px;
+}
 
 .input-group-addon:not(:first-child):not(:last-child), .input-group-btn:not(:first-child):not(:last-child), .input-group .form-control:not(:first-child):not(:last-child) {
     border-radius: 4px 0 0 4px;
@@ -77,4 +84,18 @@ table {
 
 .Installment {
     font-size:10px;
+}
+
+.overviewContainer {
+    max-height:400px;
+    overflow:auto;
+}
+
+
+.Number {
+    text-align:right;
+}
+
+.ads {
+    text-align:center;
 }
