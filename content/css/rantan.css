@@ -4,7 +4,7 @@ body {
     font-size: 18px;
     font-weight: 400;
     line-height: 30px;
-    background: url("back.png") repeat scroll 0 0 rgba(0, 0, 0, 0);
+    background: url("../back.png") repeat scroll 0 0 rgba(0, 0, 0, 0);
     border-top: 3px solid #E24E35;
 }
 
