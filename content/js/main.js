@@ -1,6 +1,6 @@
 ﻿var yomoApp = angular.module("yomoApp", []);
 
-yomoApp.controller("CalculateController", function ($scope) {
+yomoApp.controller("CalculateController", ['$scope', function ($scope) {
 
     $scope.loans = [{
         name: "Lån #1",
@@ -41,9 +41,9 @@ yomoApp.controller("CalculateController", function ($scope) {
 
         $scope.loans.splice($scope.loans.length - 1, 0, copy);
     };
-});
+}]);
 
-yomoApp.controller("CalculationController", function ($scope) {
+yomoApp.controller("CalculationController", ['$scope', function ($scope) {
     var calculation = $scope.calculation;
     var loan = $scope.loan;
 
@@ -61,16 +61,29 @@ yomoApp.controller("CalculationController", function ($scope) {
     $scope.calculate = function (calculation) {
         calculation.calculate(loan.deposit);
     }
-});
+}]);
 
-yomoApp.controller("LoanController", function ($scope) {
+yomoApp.controller("LoanController", ['$scope', function ($scope) {
     var loan = $scope.loan;
 
     $scope.addCalculation = function () {
         var copy = angular.copy(loan.calculations[loan.calculations.length - 1]);
         loan.calculations.push(copy);
     };
-});
+
+    $scope.getHideContent = function () {
+        /*
+        console.log('woop woop');
+        var interests = loan.calculations.map(function (n) { return parseInt(n.result.totalInterestCharge); });
+        console.log(interests);
+        
+        console.log(Array.max(interests));
+        console.log(Array.min(interests));
+        if (loan.calculations.length > 1) {
+            
+        }*/
+    };
+}]);
 
 
 var Calculation = function () {
@@ -242,3 +255,11 @@ Date.prototype.copy = function (date) {
     this.setMonth(date.getMonth(), 1);
     return this;
 }
+
+Array.max = function (array) {
+    return Math.max.apply(Math, array);
+};
+
+Array.min = function (array) {
+    return Math.min.apply(Math, array);
+};
