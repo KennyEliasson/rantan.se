@@ -43,8 +43,8 @@
 				</div>
 			</div>
 
-			<div class="row">
-				<div class="col-md-4 pricing-table bordered hover-animation" ng-class="{'deposit': loan.deposit, 'loan': !loan.deposit, 'col-md-offset-2': $even}" ng-repeat="loan in loans" ng-controller="LoanController">
+			<div class="row" ng-repeat="loanRow in loanRows">
+				<div class="col-md-4 pricing-table bordered hover-animation" ng-class="{'deposit': loan.deposit, 'loan': !loan.deposit, 'col-md-offset-4': loanRow.loans.length==1&&$first, 'col-md-offset-2': loanRow.loans.length!=1&&$first}" ng-repeat="loan in loanRow.loans" ng-controller="LoanController">
 					<div class="locked" ng-hide="loan.active">
 						<button type="button" class="btn btn-lg btn-loan" ng-click="activate(loan, false)">Lägg till ränteberäkning</button>
 						<br />

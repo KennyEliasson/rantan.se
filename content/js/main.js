@@ -2,45 +2,60 @@
 
 yomoApp.controller("CalculateController", ['$scope', function ($scope) {
 
-    $scope.loans = [{
+    var loans = [{
         name: "Lån #1",
         calculations: [new Calculation()],
         active: false
-    }/*, {
-        name: "Lån #2",
-        calculations: [new Calculation()],
-        active: false,
-		deposit: true
-    }*/];
+    }];
 
     $scope.paymentLimit = 12;
-
+	
+	$scope.loanRows = [{row: 0, loans: []}];
+	
+	var updateLoanRows = function(loan) {
+		var lastLoanRow = $scope.loanRows[$scope.loanRows.length-1];
+		if(lastLoanRow.loans.length == 2) {
+			var newLoanRow = {row: $scope.loanRows.length-1, loans: []};
+			$scope.loanRows.push(newLoanRow);
+			lastLoanRow = newLoanRow;
+		}
+		
+		lastLoanRow.loans.push(loan);
+		console.log($scope.loanRows);
+	};
+	
+	updateLoanRows(loans[0]);
 
     $scope.activate = function (loan, deposit) {
-        var copy = angular.copy($scope.loans[$scope.loans.length - 1]); //Copy the last loan
-        copy.active = true;
+        var copy = angular.copy(loans[loans.length - 1]); //Copy the last loan
+        copy.name = 'Skapa ny';
+		
+		var activatedLoan = loans[loans.length - 1];
+		activatedLoan.active = true;
 
-
-        var activeDeposits = $scope.loans.filter(function (loan) { return loan.active && loan.deposit; }).length;
-        var activeLoans = $scope.loans.length - activeDeposits;
+        var activeDeposits = loans.filter(function (loan) { return loan.active && loan.deposit; }).length;
+        var activeLoans = loans.length - activeDeposits;
         activeDeposits += 1;
 
         //Om det inte är samma typ vi lägger till så resetta tillbaka till "default" värden
-        if (!copy.deposit && deposit) {
-            copy.calculations[0].years = 5;
-            copy.calculations[0].amount = 5000;
-            copy.calculations[0].interest = "1.2";
-            copy.calculations[0].installment = 1000;
-        } else if (copy.deposit && !deposit) {
-            copy.calculations[0].amount = 100000;
-            copy.calculations[0].interest = "5";
-            copy.calculations[0].installment = 1000;
+        if (!activatedLoan.deposit && deposit) {
+            activatedLoan.calculations[0].years = 5;
+            activatedLoan.calculations[0].amount = 5000;
+            activatedLoan.calculations[0].interest = "1.2";
+            activatedLoan.calculations[0].installment = 1000;
+        } else if (activatedLoan.deposit && !deposit) {
+            activatedLoan.calculations[0].amount = 100000;
+            activatedLoan.calculations[0].interest = "5";
+            activatedLoan.calculations[0].installment = 1000;
         }
 
-        copy.deposit = deposit;
-        copy.name = deposit ? "Sparande #" + activeDeposits : "Lån #" + activeLoans;
+        activatedLoan.deposit = deposit;
+        activatedLoan.name = deposit ? "Sparande #" + activeDeposits : "Lån #" + activeLoans;
 
-        $scope.loans.splice($scope.loans.length - 1, 0, copy);
+        //loans.splice(loans.length - 1, 0, copy);
+		loans.push(copy);
+		
+		updateLoanRows(copy);
     };
 }]);
 
@@ -196,7 +211,6 @@ Calculation.prototype = {
         var yearlyCost = 0;
         var monthCount = 0;
         var sum = this.amount;
-		var f
         for (var i = 0; i < payments.length; i++) {
             if (payments[i].date.getFullYear() > currentYear) {
                 overviews.push(new Overview(currentYear, yearlyCost, this.installment, monthCount));
