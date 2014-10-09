@@ -136,28 +136,34 @@
 							<a href="" ng-show="!calculation.tooLowInstallment" ng-click="calculation.showOverview=!calculation.showOverview" ng-class="{'glyphicon-chevron-down': !calculation.showOverview, 'glyphicon-chevron-up': calculation.showOverview}" class="glyphicon "></a></span>
 							
 							<div ng-show="calculation.showOverview && !calculation.tooLowInstallment">
-								<div style="width:100%;margin:0 auto;">Upp</div>
-								<div style="max-height:200px;overflow:auto;">
+								
+								<div>
 									<span class="Installment">(Siffra inom parantes avser kostnad inklusive amortering)</span>
-									<table class="table table-condensed table-striped table-hover">
+									<table class="table table-condensed table-striped table-hover" style="margin-bottom:0;">
 										<thead>
 											<tr>
-												<th></th>
-												<th class="text-right">Årskostnad</th>
-												<th class="text-right">Månadskostnad</th>
+												<th style="width:10%"></th>
+												<th style="width:50%" class="text-right">Årskostnad</th>
+												<th style="width:40%" class="text-right">Månadskostnad</th>
 											</tr>
 										</thead>
+									</table>
+								</div>
+								<div style="max-height:200px;overflow:auto;">
+									
+									<table class="table table-condensed table-striped table-hover">
+										
 										<tbody>
 											<tr ng-repeat="year in calculation.result.overview">
-												<td>{{year.id}}</td>
-												<td class="text-right">{{year.sum}} <span class="Installment">({{year.sumWithInstallment}})</span></td>
-												<td class="text-right">{{year.monthly}} <span class="Installment">({{year.monthlyWithInstallment}})</span></td>
+												<td style="width:10%">{{year.id}}</td>
+												<td style="width:50%" class="text-right">{{year.sum}} <span class="Installment">({{year.sumWithInstallment}})</span></td>
+												<td style="width:40%" class="text-right">{{year.monthly}} <span class="Installment">({{year.monthlyWithInstallment}})</span></td>
 											</tr>
 										</tbody>
 
 									</table>
 								</div>
-								<div style="width:100%;margin:0 auto;">V</div>
+								
 							</div>
 							
 						</li>
