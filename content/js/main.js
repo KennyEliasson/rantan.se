@@ -21,7 +21,6 @@ yomoApp.controller("CalculateController", ['$scope', function ($scope) {
 		}
 		
 		lastLoanRow.loans.push(loan);
-		console.log($scope.loanRows);
 	};
 	
 	updateLoanRows(loans[0]);
