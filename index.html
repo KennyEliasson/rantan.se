@@ -1,310 +1,201 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html ng-app="yomoApp">
-<head>
-        
-    <meta name="msvalidate.01" content="A73BA76E47AB4DF05A697812183841D2" />
-    <meta name="google-site-verification" content="XKBROtRvJ9NiEx_Tlxy6hL7oh-ruYdutMkupECpAriE" />
+	<head>
+		<title>Räntekalkylen.se</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="msvalidate.01" content="A73BA76E47AB4DF05A697812183841D2" />
+		<meta name="google-site-verification" content="XKBROtRvJ9NiEx_Tlxy6hL7oh-ruYdutMkupECpAriE" />
+		
+		<!-- Bootstrap 3.0 CSS File -->
+		<link href="content/css/bootstrap.min.css" rel="stylesheet" media="screen">
+		<!-- Font Awesome CSS File -->
+		<!--<link href="css/font-awesome.min.css" rel="stylesheet">-->
 
-    <title>Räntekalkylen.se - Räkna på ränta och jämför olika räntor</title>
-    <meta name="description" content="Med hjälp av Räntekalkylen.se kan du snabbt och lätt räkna ut räntekostnader på dina lån. Jämför räntor och amorteringar för att snabbt ske skillnaden på olika räntor. Du kan även räkna ränta på ränta för att se hur dina sparpengar växer.">
+		<!-- Google Webfonts -->
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+		<link href='http://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
+		
+		
+		<!--<link href="css/pricing-table-global.css" rel="stylesheet">-->
+		<link href="content/css/rantan.css" rel="stylesheet">
+	</head>
 
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-    <!-- Bootstrap -->
-    <link href="content/css/bootstrap.min.css" rel="stylesheet">
-    <link href="content/css/rantan.css?v=2" rel="stylesheet">
+	<body>
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
-    <![endif]-->
+	
+		<div class="background"></div>
 
-</head>
-<body>
+		<div class="container" ng-controller="CalculateController">
+			<div class="row">
+				<div class="page-header" style="background-color:transparent;">
+					<h1>
+						Räntekalkylen.se
+					</h1>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="sub-header">
+					<h3>Räkna snabbt ut räntekostnader eller ränta på ränta</h3>
+					<p style="margin-top:10px;">Jämför hur olika räntor, amorteringsbelopp och avbetalningshastigheter påverkar din ekonomi.</p>
+					<p>Eller varför inte se hur ett månadssparande över tid växer och ger dig en rejäl skjuts i din privatekonomi.</p>
+					<p>Räntekalkylen.se hjälper dig ta rätt beslut om din privatekonomi!</p>
+				</div>
+			</div>
 
-    <header>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="logotype">
-                        <h1 class="color">Räntekalkylen.se</h1>
-                    </div>
-                </div>
+			<div class="row">
+				<div class="col-md-4 pricing-table bordered hover-animation" ng-class="{'deposit': loan.deposit, 'loan': !loan.deposit, 'col-md-offset-2': $even}" ng-repeat="loan in loans" ng-controller="LoanController">
+					<div class="locked" ng-hide="loan.active">
+						<button type="button" class="btn btn-lg btn-loan" ng-click="activate(loan, false)">Lägg till ränteberäkning</button>
+						<br />
+						<br />
+						<button type="button" class="btn btn-lg btn-deposit" ng-click="activate(loan, true)">Lägg till sparandeberäkning</button>
+					</div>
+					<ul ng-repeat="calculation in loan.calculations" ng-controller="CalculationController" ng-class="{'calculation-locked': !loan.active}">
+						<li class="title">
+							<span contenteditable>{{loan.name}}</span>
+						</li>
+						<li class="price">
+							<span class="currency-symbol"></span>
+							<strong>{{calculation.result.totalInterestCharge}}</strong>
+							<sup>kr</sup>
+							<br>
+							<em ng-show="!loan.deposit">i räntekostnad</em>
+							<em ng-show="loan.deposit">på kontot!</em>
+						</li>
+						<li>
+							<div class="form-group">
+								<label class="control-label">
+									<span ng-show="!loan.deposit">Lånebelopp</span>
+									<span ng-show="loan.deposit">Startbelopp</span>
+								</label>	
+								<div class="pull-right col-xs-7 form-control-holder">
+									<div class="input-group">
+										<input ng-model="calculation.amount" type="text" class="form-control text-right" />
+										<span class="input-group-addon">kr</span>
+									</div>
+								</div>
+							</div>									
+						</li>
+						<li>
+						
+							<div class="form-group">
+								<label class="control-label">Räntesats</label>	
+								<div class="pull-right col-xs-3 form-control-holder">
+									<div class="input-group">
+										<input ng-model="calculation.interest" type="text" class="form-control text-right" />
+										<span class="input-group-addon">%</span>
+									</div>
+								</div>
+							</div>
+						</li>
+						<li>
+							<div class="form-group">
+								<label class="control-label">
+									<span ng-show="!loan.deposit">Amortering</span>
+									<span ng-show="loan.deposit">Månadsinsättning</span>
+								</label>	
+								<div class="pull-right col-xs-7 form-control-holder">
+									<div class="input-group">
+										<input ng-change="calculation.mode=1;calculate(calculation)" ng-model="calculation.installment" type="text" class="form-control text-right" />
+										<span class="input-group-addon">kr</span>
+									</div>
+								</div>
+							</div>
+						</li>
+						<li>
+						
+							<div class="form-group" ng-show="!loan.deposit">
+								<label class="control-label">Avbetalt</label>	
+								<div class="pull-right col-xs-7 form-control-holder">
+									<span class="pull-right"><a href="" ng-click="showDates=true" ng-show="!showDates">{{calculation.result.lastPaymentDate}}</a></span>
+									<div class="input-group" ng-show="showDates==true">
+									<input type="text" class="form-control text-right" ng-show="calculation.dateMode==2" ng-change="calculation.mode=2;calculate(calculation)" ng-blur="showDates=false" ng-model="calculation.years">
+									<input type="text" class="form-control round text-right" ng-show="calculation.dateMode==1" ng-change="calculation.mode=3;calculate(calculation)" ng-blur="showDates=false" ng-model="calculation.months">
+									<div class="input-group-btn">
+										<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" ng-click="showDateModes=!showDateModes">{{modeText(calculation.dateMode)}}<span class="caret"></span></button>
+										<ul role="menu" class="dropdown-menu pull-right" ng-show="showDateModes">
+											<li><a href="" ng-click="calculation.dateMode=2;showDateModes=false;">år</a></li>
+											<li><a href="" ng-click="calculation.dateMode=1;showDateModes=false;">månader</a></li>
+										</ul>
+									</div>
+								</div>
+								</div>
+							</div>
+							
+							<div class="form-group" ng-show="loan.deposit">
+								<label class="control-label">Antal år</label>	
+								<div class="pull-right col-xs-3 form-control-holder">
+									<input type="text" ng-change="calculate(calculation)" ng-model="calculation.years" class="form-control text-right">
+								</div>
+							</div>
+						</li>
+						
+						<li class="button" ng-show="!loan.deposit">
+							Se beräkning per år
+							<a href="" ng-show="!calculation.tooLowInstallment" ng-click="calculation.showOverview=!calculation.showOverview" ng-class="{'glyphicon-chevron-down': !calculation.showOverview, 'glyphicon-chevron-up': calculation.showOverview}" class="glyphicon "></a></span>
+							
+							<div ng-show="calculation.showOverview && !calculation.tooLowInstallment">
+								<div style="width:100%;margin:0 auto;">Upp</div>
+								<div style="max-height:200px;overflow:auto;">
+									<span class="Installment">(Siffra inom parantes avser kostnad inklusive amortering)</span>
+									<table class="table table-condensed table-striped table-hover">
+										<thead>
+											<tr>
+												<th></th>
+												<th class="text-right">Årskostnad</th>
+												<th class="text-right">Månadskostnad</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr ng-repeat="year in calculation.result.overview">
+												<td>{{year.id}}</td>
+												<td class="text-right">{{year.sum}} <span class="Installment">({{year.sumWithInstallment}})</span></td>
+												<td class="text-right">{{year.monthly}} <span class="Installment">({{year.monthlyWithInstallment}})</span></td>
+											</tr>
+										</tbody>
 
-            </div>
+									</table>
+								</div>
+								<div style="width:100%;margin:0 auto;">V</div>
+							</div>
+							
+						</li>
+					</ul>
+				
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-xs-12 ads">
+					<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+					<!-- Ränta -->
+					<ins class="adsbygoogle"
+						style="display: inline-block; width: 320px; height: 100px"
+						data-ad-client="ca-pub-5746005508466845"
+						data-ad-slot="5290080130"></ins>
+					<script>
+						(adsbygoogle = window.adsbygoogle || []).push({});
+					</script>
+				</div>
+			</div>
+			
+			<!--
+			<div style="text-align: center; margin-top: 40px;"><a href="#"><i class="icon-arrow-up"></i> Back to Top</a></div>
+			-->
+		</div>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.2/angular.js"></script>
+		<script src="content/js/main.js"></script>
+		<script>
+		  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-            <div class="row">
-                <div class="col-md-12 col-sm-12">
-                    <div class="description">
+		  ga('create', 'UA-46212289-1', 'auto');
+		  ga('send', 'pageview');
 
-                        <p>
-                            Räkna snabbt ut dina räntekostnader. Jämför hur olika räntor, amorteringsbelopp och avbetalningshastigheter påverkar din ekonomi.
-                            <br />
-                            Eller välj att se hur ditt sparande rör sig över tid och hur mycket en högre sparränta påverkar ditt kapital.
-                        </p>
+		</script>
 
-                        <p>
-                            Vi hjälper dig med dina ränteberäkningar!
-                        </p>
-
-                    </div>
-                </div>
-
-                <hr />
-
-            </div>
-
-        </div>
-    </header>
-
-    <div class="container" ng-controller="CalculateController">
-        <div class="row" ng-repeat="loan in loans" ng-controller="LoanController">
-            <div class="col-md-12">
-                <div class="locked" ng-hide="loan.active">
-                    <button type="button" class="btn btn-lg btn-danger" ng-click="activate(loan, false)">Lägg till ränteberäkning</button>
-                    <br />
-                    <br />
-                    <button type="button" class="btn btn-lg btn-primary" ng-click="activate(loan, true)">Lägg till sparandeberäkning</button>
-                </div>
-                <div class="panel panel-default" ng-class="{'panel-locked': !loan.active}">
-                    <div class="panel-heading" ng-class="{'deposit': loan.deposit}">
-                        <span contenteditable>{{loan.name}}</span>
-                    </div>
-                    <div class="panel-body" ng-if="!loan.deposit">
-
-                        <div class="row">
-                            <div class="col-xs-7">
-                                <div class="col-xs-4">
-                                    <strong>Lånebelopp</strong>
-                                </div>
-                                <div class="col-xs-4">
-                                    <strong>Räntesats</strong>
-                                </div>
-                                <div class="col-xs-4">
-                                    <strong>Amortering</strong>
-                                </div>
-
-                            </div>
-                            <div class="col-xs-5">
-                                <div class="col-xs-6">
-                                    <strong>Avbetalt</strong>
-                                </div>
-                                <div class="col-xs-6 text-right">
-                                    <strong>Räntekostnad</strong>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div ng-repeat="calculation in loan.calculations" ng-controller="CalculationController">
-
-                            <div class="row calculationRow">
-
-                                <div class="col-xs-7">
-                                    <div class="col-xs-4">
-                                        <div class="input-group">
-                                            <input type="text" ng-model="calculation.amount" class="form-control">
-                                            <span class="input-group-addon">kr</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-4">
-                                        <div class="input-group">
-                                            <input type="text" ng-model="calculation.interest" class="form-control">
-                                            <span class="input-group-addon">%</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-4">
-                                        <div class="input-group">
-                                            <input type="text" ng-change="calculation.mode=1;calculate(calculation)" ng-model="calculation.installment" class="form-control">
-                                            <span class="input-group-addon">kr</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-xs-5">
-                                    <div class="col-xs-6">
-
-
-                                        <a href="" ng-click="showDates=true" ng-show="!showDates">{{calculation.result.lastPaymentDate}}</a>
-
-                                        <div class="input-group" ng-show="showDates==true">
-                                            <input type="text" class="form-control" ng-show="calculation.dateMode==2" ng-change="calculation.mode=2;calculate(calculation)" ng-blur="showDates=false" ng-model="calculation.years">
-                                            <input type="text" class="form-control round" ng-show="calculation.dateMode==1" ng-change="calculation.mode=3;calculate(calculation)" ng-blur="showDates=false" ng-model="calculation.months">
-                                            <div class="input-group-btn">
-                                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" ng-click="showDateModes=!showDateModes">{{modeText(calculation.dateMode)}}<span class="caret"></span></button>
-                                                <ul class="dropdown-menu pull-right" ng-show="showDateModes">
-                                                    <li><a href="" ng-click="calculation.dateMode=2;showDateModes=false;">år</a></li>
-                                                    <li><a href="" ng-click="calculation.dateMode=1;showDateModes=false;">månader</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-6 text-right">
-                                        <span>{{calculation.result.totalInterestCharge}} kr <span ng-show="calculation.tooLowInstallment">/månad</span> <a href="" ng-show="!calculation.tooLowInstallment" ng-click="calculation.showOverview=!calculation.showOverview" ng-class="{'glyphicon-chevron-down': !calculation.showOverview, 'glyphicon-chevron-up': calculation.showOverview}" class="glyphicon "></a></span>
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                            <div class="row" ng-show="calculation.showOverview && !calculation.tooLowInstallment">
-                                <div class="col-xs-6 col-xs-offset-6 overviewContainer">
-                                    <span class="Installment pull-right">(Siffra inom parantes avser kostnad inklusive amortering)</span>
-                                    <table class="table table-condensed table-striped table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th></th>
-                                                <th class="Number">Årskostnad</th>
-                                                <th class="Number">Månadskostnad</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr ng-repeat="year in calculation.result.overview">
-                                                <td>{{year.id}}</td>
-                                                <td class="Number">{{year.sum}} <span class="Installment">({{year.sumWithInstallment}})</span></td>
-                                                <td class="Number">{{year.monthly}} <span class="Installment">({{year.monthlyWithInstallment}})</span></td>
-                                            </tr>
-                                        </tbody>
-
-                                    </table>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div class="row">
-                            <div class="col-xs-12">
-                                <div class="form-group">
-
-                                    <div class="col-xs-3">
-                                        <button class="btn btn-default" ng-click="addCalculation()">+ Jämför med...</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="panel-body deposit" ng-if="loan.deposit">
-
-                        <div class="row">
-                            <div class="col-xs-7">
-                                <div class="col-xs-4">
-                                    <strong>Startbelopp</strong>
-                                </div>
-                                <div class="col-xs-4">
-                                    <strong>Räntesats</strong>
-                                </div>
-                                <div class="col-xs-4">
-                                    <strong>Månadsinsättning</strong>
-                                </div>
-
-                            </div>
-                            <div class="col-xs-5">
-                                <div class="col-xs-6">
-                                    <strong>År</strong>
-                                </div>
-                                <div class="col-xs-6 text-right">
-                                    <strong>Totalt</strong>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row calculationRow" ng-repeat="calculation in loan.calculations" ng-controller="CalculationController">
-
-                            <div class="col-xs-7">
-                                <div class="col-xs-4">
-                                    <div class="input-group">
-                                        <input type="text" ng-model="calculation.amount" class="form-control">
-                                        <span class="input-group-addon">kr</span>
-                                    </div>
-                                </div>
-                                <div class="col-xs-4">
-                                    <div class="input-group">
-                                        <input type="text" ng-model="calculation.interest" class="form-control">
-                                        <span class="input-group-addon">%</span>
-                                    </div>
-                                </div>
-                                <div class="col-xs-4">
-                                    <div class="input-group">
-                                        <input type="text" ng-change="calculation.mode=1;calculate(calculation)" ng-model="calculation.installment" class="form-control">
-                                        <span class="input-group-addon">kr</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-xs-5">
-                                <div class="col-xs-6">
-
-                                    <input type="text" ng-change="calculate(calculation)" ng-model="calculation.years" class="form-control">
-                                </div>
-                                <div class="col-xs-6 text-right">
-                                    <span>{{calculation.result.totalInterestCharge}} kr</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class=" col-xs-12">
-                                <div class="form-group">
-
-                                    <div class="col-xs-3">
-                                        <button class="btn btn-default" ng-click="addCalculation()">+ Jämför med...</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-xs-12 ads">
-                <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-                <!-- Ränta -->
-                <ins class="adsbygoogle"
-                    style="display: inline-block; width: 320px; height: 100px"
-                    data-ad-client="ca-pub-5746005508466845"
-                    data-ad-slot="5290080130"></ins>
-                <script>
-                    (adsbygoogle = window.adsbygoogle || []).push({});
-                </script>
-            </div>
-        </div>
-    </div>
-
-
-
-    <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
-        <div class="container">
-            &copy; <a href="http://codespark.se">Codespark.se</a>
-        </div>
-    </nav>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.2/angular.min.js"></script>
-
-    <script type="text/javascript">
-
-        (function (i, s, o, g, r, a, m) {
-            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
-                (i[r].q = i[r].q || []).push(arguments)
-            }, i[r].l = 1 * new Date(); a = s.createElement(o),
-            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
-        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-
-        ga('create', 'UA-46212289-1', 'rantekalkylen.se');
-        ga('send', 'pageview');
-
-    </script>
-
-    <script src="content/js/main.js?v=1"></script>
-
-</body>
+	</body>
 </html>

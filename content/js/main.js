@@ -5,24 +5,25 @@ yomoApp.controller("CalculateController", ['$scope', function ($scope) {
     $scope.loans = [{
         name: "Lån #1",
         calculations: [new Calculation()],
-        active: true
-    }, {
+        active: false
+    }/*, {
         name: "Lån #2",
         calculations: [new Calculation()],
-        active: false
-    }];
+        active: false,
+		deposit: true
+    }*/];
 
     $scope.paymentLimit = 12;
 
+
     $scope.activate = function (loan, deposit) {
-        var copy = angular.copy($scope.loans[$scope.loans.length - 2]); //Copy the last loan
+        var copy = angular.copy($scope.loans[$scope.loans.length - 1]); //Copy the last loan
         copy.active = true;
 
 
         var activeDeposits = $scope.loans.filter(function (loan) { return loan.active && loan.deposit; }).length;
         var activeLoans = $scope.loans.length - activeDeposits;
         activeDeposits += 1;
-
 
         //Om det inte är samma typ vi lägger till så resetta tillbaka till "default" värden
         if (!copy.deposit && deposit) {
@@ -181,7 +182,7 @@ Calculation.prototype = {
         }
 
         result.overview = this.paymentOverview(payments, result);
-
+		
         result.totalInterestCharge = result.totalInterestCharge.toRoundedLocale();
         result.lastDate = payments[payments.length - 1].date;
         result.lastPaymentDate = result.lastDate.toString();
@@ -195,6 +196,7 @@ Calculation.prototype = {
         var yearlyCost = 0;
         var monthCount = 0;
         var sum = this.amount;
+		var f
         for (var i = 0; i < payments.length; i++) {
             if (payments[i].date.getFullYear() > currentYear) {
                 overviews.push(new Overview(currentYear, yearlyCost, this.installment, monthCount));
