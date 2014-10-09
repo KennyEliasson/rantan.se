@@ -470,3 +470,23 @@ h1 {
 .pricing-table ul {
 	margin-bottom:40px;
 }
+
+.btn-loan {
+	background-color:#e53f2e;
+	color:#fff;
+}
+
+.btn-loan:hover {
+	background-color:#BE2212;
+	color:#fff;
+}
+
+.btn-deposit {
+	background-color:#3498db;
+	color:#fff;
+}
+
+.btn-deposit:hover {
+	background-color:#0F85D1;
+	color:#fff;
+}
